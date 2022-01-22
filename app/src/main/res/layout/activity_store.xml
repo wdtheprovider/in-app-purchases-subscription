@@ -4,47 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     android:padding="10dp"
     tools:context=".StoreActivity">
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/btn_subscription"
-        android:layout_centerInParent="true"
+
+    <Button
+        android:id="@+id/txt_price"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardBackgroundColor="@color/purple_200"
-        app:cardCornerRadius="10dp"
-        app:cardUseCompatPadding="true">
+        android:layout_centerInParent="true"
+        android:padding="10dp"
+        android:text="Loading..."
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:visibility="visible" />
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="20dp">
-
-            <TextView
-                android:id="@+id/txt_price"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/txt_month"
-                android:layout_centerInParent="true"
-                android:layout_marginTop="10dp"
-                android:text="R49.99 /pm Auto-renewal"
-                android:textColor="@color/white"
-                android:textSize="20dp"
-                android:textStyle="normal" />
-
-            <TextView
-                android:id="@+id/txt_month"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true"
-                android:text="1 Month"
-                android:textColor="@color/white"
-                android:textSize="20dp"
-                android:textStyle="bold" />
-
-
-        </RelativeLayout>
-    </androidx.cardview.widget.CardView>
 </RelativeLayout>
