@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">sharcourse</string>
+    <string name="app_name">SharCourse</string>
+    <string name="product_id">premium</string>
+    <string name="subscribe">Subscribe</string>
 </resources>
