@@ -1,5 +1,7 @@
 # Welcome to in-app-purchase (Android Studio Java*)
 
+Consumable Item In-App Purchases: https://github.com/wdtheprovider/in-app-purchase
+
 In this repository i'm going to show you how to integrate In-App Purchase for Subscription of Google Play Billing version 4+ in 7 steps. I follow the officailly google 
  docs, i'm not using any third-party library
 
