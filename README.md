@@ -222,45 +222,40 @@ Step 6: //Handling pending transactions<br>
 ```
 
 
-Step 7: //Check Subscription <br>
+Step 7: //Check Subscription (This code goes to your Splash screen) <br>
 
 ```
-    void checkSubscription(){
-
-        billingClient = BillingClient.newBuilder(this).enablePendingPurchases().setListener((billingResult, list) -> {}).build();
+  void checkSubscription() {
+        
+        billingClient = BillingClient.newBuilder(this).enablePendingPurchases().setListener((billingResult, list) -> {
+        }).build();
 
         final BillingClient finalBillingClient = billingClient;
-
         billingClient.startConnection(new BillingClientStateListener() {
             @Override
             public void onBillingServiceDisconnected() {
 
             }
-
             @Override
             public void onBillingSetupFinished(@NonNull BillingResult billingResult) {
 
-                if(billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK){
+                if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
                     finalBillingClient.queryPurchasesAsync(BillingClient.SkuType.SUBS, (billingResult1, list) -> {
-                        if (billingResult1.getResponseCode() ==BillingClient.BillingResponseCode.OK && list != null){
-                            int i = 0;
-                            for (Purchase purchase: list){
-                                if (purchase.getSkus().get(i).equals("sub_premium")) {
-                                    Log.d("SubTest", purchase + "");
-                                    prefs.setPremium(1);
-                                } else {
-                                    prefs.setPremium(0);
-                                }
-                                i++;
-                            }
+                        //this "list" will contain all the sub purchases.
+                        if (billingResult1.getResponseCode() == BillingClient.BillingResponseCode.OK && list.size() > 0) {
+                            //list is more than 0 meaning there is an active subscription available
+                            prefs.setPremium(1);
+                        } else if (list.size() == 0) {
+                            //When the list returns zero, it means there are no active subscription
+                            prefs.setPremium(0);
                         }
                     });
 
                 }
-
             }
         });
     }
+ 
 ```
 
 
