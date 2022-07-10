@@ -60,9 +60,9 @@ Step 0: //Add the Google Play Billing Library dependency<br>
 //Add the Google Play Billing Library dependency to your app's build.gradle file as shown:
 
 dependencies {
-    def billing_version = "4.0.0"
+    def billingVersion = "5.0.0"
 
-    implementation "com.android.billingclient:billing:$billing_version"
+    implementation "com.android.billingclient:billing:$billingVersion"
 }
 
 And Open Manifest File and add this permission
@@ -115,77 +115,103 @@ Step 2: //Establish a connection to Google Play<br>
             }
         });
     }
+
     
 ```
 Step 3: //Show products available to buy<br>
 
 ```
-   void showProducts() {
-        List<String> skuList = new ArrayList<>();
-        skuList.add("sub_premium");
-        SkuDetailsParams.Builder params = SkuDetailsParams.newBuilder();
-        params.setSkusList(skuList).setType(BillingClient.SkuType.SUBS);
-        billingClient.querySkuDetailsAsync(params.build(),
-                new SkuDetailsResponseListener() {
-                    @SuppressLint("SetTextI18n")
-                    @Override
-                    public void onSkuDetailsResponse(@NonNull BillingResult billingResult,
-                                                     List<SkuDetails> skuDetailsList) {
-                        if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK && skuDetailsList != null) {
-                            // Process the result.
-                            for (SkuDetails skuDetails : skuDetailsList) {
-                                if (skuDetails.getSku().equals("sub_premium")) {
-                                    //Now update the UI
-                                    txt_price.setText(skuDetails.getPrice() + " Per Month");
-                                    txt_price.setOnClickListener(view -> {
-                                        launchPurchaseFlow(skuDetails);
-                                    });
-                                }
-                            }
+@SuppressLint("SetTextI18n")
+    void showProducts() {
+
+        ImmutableList<QueryProductDetailsParams.Product> productList = ImmutableList.of(
+                //Product 1 = index is 0
+                QueryProductDetailsParams.Product.newBuilder()
+                .setProductId("sub_premium")
+                .setProductType(BillingClient.ProductType.SUBS)
+                .build(),
+
+                //Product 2 = index is 1
+                QueryProductDetailsParams.Product.newBuilder()
+                .setProductId("test_id_shar")
+                .setProductType(BillingClient.ProductType.SUBS)
+                .build()
+
+        );
+
+        QueryProductDetailsParams params = QueryProductDetailsParams.newBuilder()
+                .setProductList(productList)
+                .build();
+
+        billingClient.queryProductDetailsAsync(
+                params,
+                (billingResult, productDetailsList) -> {
+                    // Process the result
+                    for (ProductDetails productDetails : productDetailsList) {
+                        if (productDetails.getProductId().equals("sub_premium")) {
+                            List<ProductDetails.SubscriptionOfferDetails> subDetails = productDetails.getSubscriptionOfferDetails();
+                            assert subDetails != null;
+                            Log.d("testOffer",subDetails.get(0).getOfferToken());
+                            txt_price.setText(subDetails.get(0).getPricingPhases().getPricingPhaseList().get(0).getFormattedPrice()+" Per Month");
+                            txt_price.setOnClickListener(view -> {
+                                launchPurchaseFlow(productDetails);
+                            });
+                        }
+
+                        if (productDetails.getProductId().equals("test_id_shar")) {
+                            List<ProductDetails.SubscriptionOfferDetails> subDetails = productDetails.getSubscriptionOfferDetails();
+                            assert subDetails != null;
+                            Log.d("testOffer",subDetails.get(1).getOfferToken());
+                            offer_btn.setText(subDetails.get(1).getPricingPhases().getPricingPhaseList().get(0).getFormattedPrice()+" Per Month");
+                            offer_btn.setOnClickListener(view -> {
+                                launchPurchaseFlow(productDetails);
+                            });
                         }
                     }
-                });
+                }
+        );
+
     }
     
 ```
 Step 4: //Launch the purchase flow<br>
 
 ```
-  void launchPurchaseFlow(SkuDetails skuDetails) {
-
+    void launchPurchaseFlow(ProductDetails productDetails) {
+        assert productDetails.getSubscriptionOfferDetails() != null;
+        ImmutableList<BillingFlowParams.ProductDetailsParams> productDetailsParamsList =
+                ImmutableList.of(
+                        BillingFlowParams.ProductDetailsParams.newBuilder()
+                                .setProductDetails(productDetails)
+                                .setOfferToken(productDetails.getSubscriptionOfferDetails().get(0).getOfferToken())
+                                .build()
+                );
         BillingFlowParams billingFlowParams = BillingFlowParams.newBuilder()
-                .setSkuDetails(skuDetails)
+                .setProductDetailsParamsList(productDetailsParamsList)
                 .build();
-
-        billingClient.launchBillingFlow(YourAcivity.this, billingFlowParams);
+        BillingResult billingResult = billingClient.launchBillingFlow(activity, billingFlowParams);
     }
     
 ```
 Step 5: //Processing purchases / Verify Payment<br>
 
 ```
- void verifySubPurchase(Purchase purchases) {
+ 
+    void verifySubPurchase(Purchase purchases) {
 
         AcknowledgePurchaseParams acknowledgePurchaseParams = AcknowledgePurchaseParams
                 .newBuilder()
                 .setPurchaseToken(purchases.getPurchaseToken())
                 .build();
 
-        billingClient.acknowledgePurchase(acknowledgePurchaseParams, new AcknowledgePurchaseResponseListener() {
-            @Override
-            public void onAcknowledgePurchaseResponse(@NonNull BillingResult billingResult) {
-                if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
-                    //Toast.makeText(SubscriptionActivity.this, "Item Consumed", Toast.LENGTH_SHORT).show();
-                    // Handle the success of the consume operation.
-                    //user prefs to set premium
-                    Toast.makeText(StoreActivity.this, "You are a premium user now", Toast.LENGTH_SHORT).show();
-                    //updateUser();
-
-                    //Setting premium to 1
-                    // 1 - premium
-                    //0 - no premium
-                    prefs.setPremium(1);
-                }
+        billingClient.acknowledgePurchase(acknowledgePurchaseParams, billingResult -> {
+            if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
+                //user prefs to set premium
+                Toast.makeText(StoreActivity.this, "You are a premium user now", Toast.LENGTH_SHORT).show();
+                //Setting premium to 1
+                // 1 - premium
+                // 0 - no premium
+                prefs.setPremium(1);
             }
         });
 
@@ -199,19 +225,16 @@ Step 5: //Processing purchases / Verify Payment<br>
 Step 6: //Handling pending transactions<br>
 
 ```
+   
     protected void onResume() {
         super.onResume();
-
         billingClient.queryPurchasesAsync(
-                BillingClient.SkuType.SUBS,
-                new PurchasesResponseListener() {
-                    @Override
-                    public void onQueryPurchasesResponse(@NonNull BillingResult billingResult, @NonNull List<Purchase> list) {
-                        if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
-                            for (Purchase purchase : list) {
-                                if (purchase.getPurchaseState() == Purchase.PurchaseState.PURCHASED && !purchase.isAcknowledged()) {
-                                    verifySubPurchase(purchase);
-                                }
+                QueryPurchasesParams.newBuilder().setProductType(BillingClient.ProductType.SUBS).build(),
+                (billingResult, list) -> {
+                    if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
+                        for (Purchase purchase : list) {
+                            if (purchase.getPurchaseState() == Purchase.PurchaseState.PURCHASED && !purchase.isAcknowledged()) {
+                                verifySubPurchase(purchase);
                             }
                         }
                     }
@@ -224,34 +247,41 @@ Step 6: //Handling pending transactions<br>
 
 Step 7: //Check Subscription (This code goes to your Splash screen) <br>
 
-```
-  void checkSubscription() {
-        
-        billingClient = BillingClient.newBuilder(this).enablePendingPurchases().setListener((billingResult, list) -> {
-        }).build();
+`void checkSubscription(){
 
+        billingClient = BillingClient.newBuilder(this).enablePendingPurchases().setListener((billingResult, list) -> {}).build();
         final BillingClient finalBillingClient = billingClient;
         billingClient.startConnection(new BillingClientStateListener() {
             @Override
             public void onBillingServiceDisconnected() {
 
             }
+
             @Override
             public void onBillingSetupFinished(@NonNull BillingResult billingResult) {
 
-                if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
-                    finalBillingClient.queryPurchasesAsync(BillingClient.SkuType.SUBS, (billingResult1, list) -> {
-                        //this "list" will contain all the sub purchases.
-                        if (billingResult1.getResponseCode() == BillingClient.BillingResponseCode.OK && list.size() > 0) {
-                            //list is more than 0 meaning there is an active subscription available
-                            prefs.setPremium(1);
-                        } else if (list.size() == 0) {
-                            //When the list returns zero, it means there are no active subscription
-                            prefs.setPremium(0);
+                if(billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK){
+                    finalBillingClient.queryPurchasesAsync(
+                            QueryPurchasesParams.newBuilder().setProductType(BillingClient.ProductType.SUBS).build(), (billingResult1, list) -> {
+                        if (billingResult1.getResponseCode() == BillingClient.BillingResponseCode.OK){
+                             Log.d("testOffer",list.size() +" size");
+                             if(list.size()>0){
+                                 prefs.setPremium(1); // set 1 to activate premium feature
+                                 int i = 0;
+                                 for (Purchase purchase: list){
+                                     //Here you can manage each product, if you have multiple subscription
+                                     Log.d("testOffer",purchase.getOriginalJson()); // Get to see the order information
+                                     Log.d("testOffer", " index" + i);
+                                     i++;
+                                 }
+                             }else {
+                                 prefs.setPremium(0); // set 0 to de-activate premium feature
+                             }
                         }
                     });
 
                 }
+
             }
         });
     }
