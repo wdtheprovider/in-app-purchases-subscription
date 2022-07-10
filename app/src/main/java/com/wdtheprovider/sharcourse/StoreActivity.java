@@ -12,6 +12,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -23,27 +24,28 @@ import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingClientStateListener;
 import com.android.billingclient.api.BillingFlowParams;
 import com.android.billingclient.api.BillingResult;
+import com.android.billingclient.api.ProductDetails;
+import com.android.billingclient.api.ProductDetailsResponseListener;
 import com.android.billingclient.api.Purchase;
 import com.android.billingclient.api.PurchasesResponseListener;
 import com.android.billingclient.api.PurchasesUpdatedListener;
+import com.android.billingclient.api.QueryProductDetailsParams;
+import com.android.billingclient.api.QueryPurchasesParams;
 import com.android.billingclient.api.SkuDetails;
 import com.android.billingclient.api.SkuDetailsParams;
 import com.android.billingclient.api.SkuDetailsResponseListener;
+import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.collect.ImmutableList;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class StoreActivity extends AppCompatActivity {
 
-    RelativeLayout btn_sub;
-    TextView txt_price;
+    Button txt_price,offer_btn;
     String TAG = "SubTest1";
-    SkuDetails result;
     Activity activity;
-
+    int selectedOfferIndex;
     Prefs prefs;
-
-
     private BillingClient billingClient;
 
     @Override
@@ -56,21 +58,16 @@ public class StoreActivity extends AppCompatActivity {
         activity = this;
 
         prefs = new Prefs(this);
-
+        //initializing the billing client
         billingClient = BillingClient.newBuilder(this)
                 .enablePendingPurchases()
                 .setListener(
-                        new PurchasesUpdatedListener() {
-                            @Override
-                            public void onPurchasesUpdated(@NonNull BillingResult billingResult, @Nullable List<Purchase> list) {
-                               if(billingResult.getResponseCode()==BillingClient.BillingResponseCode.OK && list !=null) {
-
-                                   for (Purchase purchase: list){
-                                       verifySubPurchase(purchase);
-                                   }
+                        (billingResult, list) -> {
+                           if(billingResult.getResponseCode()==BillingClient.BillingResponseCode.OK && list !=null) {
+                               for (Purchase purchase: list){
+                                   verifySubPurchase(purchase);
                                }
-
-                            }
+                           }
                         }
                 ).build();
 
@@ -99,39 +96,71 @@ public class StoreActivity extends AppCompatActivity {
         });
     }
 
+    @SuppressLint("SetTextI18n")
     void showProducts() {
 
-        List<String> skuList = new ArrayList<>();
-        skuList.add("sub_premium");
-        SkuDetailsParams.Builder params = SkuDetailsParams.newBuilder();
-        params.setSkusList(skuList).setType(BillingClient.SkuType.SUBS);
-        billingClient.querySkuDetailsAsync(params.build(),
-                new SkuDetailsResponseListener() {
-                    @SuppressLint("SetTextI18n")
-                    @Override
-                    public void onSkuDetailsResponse(@NonNull BillingResult billingResult,
-                                                     List<SkuDetails> skuDetailsList) {
-                        if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK && skuDetailsList != null) {
-                            // Process the result.
-                            for (SkuDetails skuDetails : skuDetailsList) {
-                                if (skuDetails.getSku().equals("sub_premium")) {
-                                    //Now update the UI
-                                    txt_price.setText(skuDetails.getPrice() + " Per Month");
-                                    txt_price.setOnClickListener(view -> {
-                                        launchPurchaseFlow(skuDetails);
-                                    });
-                                }
-                            }
+        ImmutableList<QueryProductDetailsParams.Product> productList = ImmutableList.of(
+                //Product 1 = index is 0
+                QueryProductDetailsParams.Product.newBuilder()
+                .setProductId("sub_premium")
+                .setProductType(BillingClient.ProductType.SUBS)
+                .build(),
+
+                //Product 2 = index is 1
+                QueryProductDetailsParams.Product.newBuilder()
+                .setProductId("test_id_shar")
+                .setProductType(BillingClient.ProductType.SUBS)
+                .build()
+
+        );
+
+        QueryProductDetailsParams params = QueryProductDetailsParams.newBuilder()
+                .setProductList(productList)
+                .build();
+
+        billingClient.queryProductDetailsAsync(
+                params,
+                (billingResult, productDetailsList) -> {
+                    // Process the result
+                    for (ProductDetails productDetails : productDetailsList) {
+                        if (productDetails.getProductId().equals("sub_premium")) {
+                            List<ProductDetails.SubscriptionOfferDetails> subDetails = productDetails.getSubscriptionOfferDetails();
+                            assert subDetails != null;
+                            Log.d("testOffer",subDetails.get(0).getOfferToken());
+                            txt_price.setText(subDetails.get(0).getPricingPhases().getPricingPhaseList().get(0).getFormattedPrice()+" Per Month");
+                            txt_price.setOnClickListener(view -> {
+                                launchPurchaseFlow(productDetails);
+                            });
+                        }
+
+                        if (productDetails.getProductId().equals("test_id_shar")) {
+                            List<ProductDetails.SubscriptionOfferDetails> subDetails = productDetails.getSubscriptionOfferDetails();
+                            assert subDetails != null;
+                            Log.d("testOffer",subDetails.get(1).getOfferToken());
+                            offer_btn.setText(subDetails.get(1).getPricingPhases().getPricingPhaseList().get(0).getFormattedPrice()+" Per Month");
+                            offer_btn.setOnClickListener(view -> {
+                                launchPurchaseFlow(productDetails);
+                            });
                         }
                     }
-                });
+                }
+        );
+
     }
 
-    void launchPurchaseFlow(SkuDetails skuDetails) {
+    void launchPurchaseFlow(ProductDetails productDetails) {
+        assert productDetails.getSubscriptionOfferDetails() != null;
+        ImmutableList<BillingFlowParams.ProductDetailsParams> productDetailsParamsList =
+                ImmutableList.of(
+                        BillingFlowParams.ProductDetailsParams.newBuilder()
+                                .setProductDetails(productDetails)
+                                .setOfferToken(productDetails.getSubscriptionOfferDetails().get(0).getOfferToken())
+                                .build()
+                );
         BillingFlowParams billingFlowParams = BillingFlowParams.newBuilder()
-                .setSkuDetails(skuDetails)
+                .setProductDetailsParamsList(productDetailsParamsList)
                 .build();
-        billingClient.launchBillingFlow(StoreActivity.this, billingFlowParams);
+        BillingResult billingResult = billingClient.launchBillingFlow(activity, billingFlowParams);
     }
 
 
@@ -142,21 +171,14 @@ public class StoreActivity extends AppCompatActivity {
                 .setPurchaseToken(purchases.getPurchaseToken())
                 .build();
 
-        billingClient.acknowledgePurchase(acknowledgePurchaseParams, new AcknowledgePurchaseResponseListener() {
-            @Override
-            public void onAcknowledgePurchaseResponse(@NonNull BillingResult billingResult) {
-                if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
-                    //Toast.makeText(SubscriptionActivity.this, "Item Consumed", Toast.LENGTH_SHORT).show();
-                    // Handle the success of the consume operation.
-                    //user prefs to set premium
-                    Toast.makeText(StoreActivity.this, "You are a premium user now", Toast.LENGTH_SHORT).show();
-                    //updateUser();
-
-                    //Setting premium to 1
-                    // 1 - premium
-                    //0 - no premium
-                    prefs.setPremium(1);
-                }
+        billingClient.acknowledgePurchase(acknowledgePurchaseParams, billingResult -> {
+            if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
+                //user prefs to set premium
+                Toast.makeText(StoreActivity.this, "You are a premium user now", Toast.LENGTH_SHORT).show();
+                //Setting premium to 1
+                // 1 - premium
+                // 0 - no premium
+                prefs.setPremium(1);
             }
         });
 
@@ -167,22 +189,19 @@ public class StoreActivity extends AppCompatActivity {
 
     private void initViews() {
         txt_price = findViewById(R.id.txt_price);
+        offer_btn = findViewById(R.id.offer_btn);
     }
 
 
     protected void onResume() {
         super.onResume();
-
         billingClient.queryPurchasesAsync(
-                BillingClient.SkuType.SUBS,
-                new PurchasesResponseListener() {
-                    @Override
-                    public void onQueryPurchasesResponse(@NonNull BillingResult billingResult, @NonNull List<Purchase> list) {
-                        if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
-                            for (Purchase purchase : list) {
-                                if (purchase.getPurchaseState() == Purchase.PurchaseState.PURCHASED && !purchase.isAcknowledged()) {
-                                    verifySubPurchase(purchase);
-                                }
+                QueryPurchasesParams.newBuilder().setProductType(BillingClient.ProductType.SUBS).build(),
+                (billingResult, list) -> {
+                    if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
+                        for (Purchase purchase : list) {
+                            if (purchase.getPurchaseState() == Purchase.PurchaseState.PURCHASED && !purchase.isAcknowledged()) {
+                                verifySubPurchase(purchase);
                             }
                         }
                     }
