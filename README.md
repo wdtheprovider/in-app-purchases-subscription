@@ -16,6 +16,12 @@ Demo <br>
 
 </span>
 
+<br>
+
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/donate/?hosted_button_id=KPSJWR36UHBV2)
+
+<br>
+
 Pre-requisite
 - Google Play Console Account
 - Published App on Play Store
