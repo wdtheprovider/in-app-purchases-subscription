@@ -44,25 +44,36 @@ Product ID: sub_premium
 
 The following methods (These are the methods you need for the IAP System to work, you can copy and paste)
 
-void establishConnection(){}<br>
-void showProducts(){}<br>
-void launchPurchaseFlow(){}<br>
-void verifySubPayment(Purchase purchases){}<br>
-void checkSubscription(){}<br>
+```java
+void establishConnection(){}
+void showProducts(){}
+void launchPurchaseFlow(){}
+void verifySubPayment(Purchase purchases){}
+void checkSubscription(){}
+```
 
-Step 0: //Add the Google Play Billing Library dependency<br>
-Step 1: //Initialize a BillingClient with PurchasesUpdatedListener<br>
-Step 2: //Establish a connection to Google Play<br>
-Step 3: //Show products available to buy<br>
-Step 4: //Launch the purchase flow<br>
-Step 5: //Processing purchases / Verify Payment<br>
-Step 6: //Handling pending transactions<br>
-Step 7: //Check the subscriptions on SplashScreenActivity<br>
+
+
+[**Step 1: Add the Google Play Billing Library dependency**](#step-1-add-the-google-play-billing-library-dependency)
+
+[**Step 2: Initialize a BillingClient with PurchasesUpdatedListener**](#step-2-initialize-a-billingclient-with-purchasesupdatedlistener)
+
+[**Step 3: Establish a connection to Google Play**](#step-3-establish-a-connection-to-google-play)
+
+[**Step 4: Show products available to buy**](#step-4-show-products-available-to-buy)
+
+[**Step 5: Launch the purchase flow**](#step-5-launch-the-purchase-flow)
+
+[**Step 6: Processing purchases / Verify Payment**](#step-6-processing-purchases--verify-payment)
+
+[**Step 7: Handling pending transactions**](#step-7-handling-pending-transactions)
+
+[**Step 8: Check the subscriptions on SplashScreenActivity**](#step-8-check-subscription-this-code-goes-to-your-splash-screen-)
 
 <br> Learn More: https://developer.android.com/google/play/billing/integrate
 
-Step 0: //Add the Google Play Billing Library dependency<br>
-```
+### Step 1: Add the Google Play Billing Library dependency<br>
+```gradle
 //Add the Google Play Billing Library dependency to your app's build.gradle file as shown:
 
 dependencies {
@@ -70,14 +81,16 @@ dependencies {
 
     implementation "com.android.billingclient:billing:$billingVersion"
 }
+```
 
-And Open Manifest File and add this permission
+```xml
+//And Open Manifest File and add this permission
 <uses-permission android:name="com.android.vending.BILLING" />
 
 ```
-Step 1: //Initialize a BillingClient with PurchasesUpdatedListener<br>
+### Step 2: Initialize a BillingClient with PurchasesUpdatedListener<br>
 
-```
+```java
   //Initialize a BillingClient with PurchasesUpdatedListener onCreate method
 
     billingClient = BillingClient.newBuilder(this)
@@ -99,9 +112,9 @@ Step 1: //Initialize a BillingClient with PurchasesUpdatedListener<br>
         establishConnection();
                 
 ```
-Step 2: //Establish a connection to Google Play<br>
+### Step 3: Establish a connection to Google Play<br>
 
-```
+```java
  void establishConnection() {
 
         billingClient.startConnection(new BillingClientStateListener() {
@@ -124,9 +137,9 @@ Step 2: //Establish a connection to Google Play<br>
 
     
 ```
-Step 3: //Show products available to buy<br>
+### Step 4: Show products available to buy<br>
 
-```
+```java
 @SuppressLint("SetTextI18n")
     void showProducts() {
 
@@ -180,9 +193,9 @@ Step 3: //Show products available to buy<br>
     }
     
 ```
-Step 4: //Launch the purchase flow<br>
+### Step 5: Launch the purchase flow<br>
 
-```
+```java
     void launchPurchaseFlow(ProductDetails productDetails) {
         assert productDetails.getSubscriptionOfferDetails() != null;
         ImmutableList<BillingFlowParams.ProductDetailsParams> productDetailsParamsList =
@@ -199,9 +212,9 @@ Step 4: //Launch the purchase flow<br>
     }
     
 ```
-Step 5: //Processing purchases / Verify Payment<br>
+### Step 6: Processing purchases / Verify Payment<br>
 
-```
+```java
  
     void verifySubPurchase(Purchase purchases) {
 
@@ -228,9 +241,9 @@ Step 5: //Processing purchases / Verify Payment<br>
     
 ```
 
-Step 6: //Handling pending transactions<br>
+### Step 7: Handling pending transactions<br>
 
-```
+```java
    
     protected void onResume() {
         super.onResume();
@@ -251,9 +264,10 @@ Step 6: //Handling pending transactions<br>
 ```
 
 
-Step 7: //Check Subscription (This code goes to your Splash screen) <br>
+### Step 8: Check Subscription (This code goes to your Splash screen) <br>
 
-`void checkSubscription(){
+```java
+void checkSubscription(){
 
         billingClient = BillingClient.newBuilder(this).enablePendingPurchases().setListener((billingResult, list) -> {}).build();
         final BillingClient finalBillingClient = billingClient;
