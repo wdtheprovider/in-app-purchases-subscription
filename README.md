@@ -52,8 +52,6 @@ void verifySubPayment(Purchase purchases){}
 void checkSubscription(){}
 ```
 
-
-
 [**Step 1: Add the Google Play Billing Library dependency**](#step-1-add-the-google-play-billing-library-dependency)
 
 [**Step 2: Initialize a BillingClient with PurchasesUpdatedListener**](#step-2-initialize-a-billingclient-with-purchasesupdatedlistener)
