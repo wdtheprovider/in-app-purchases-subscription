@@ -7,12 +7,15 @@ In this repository i'm going to show you how to integrate In-App Purchases of Go
 
 Demo <br>
 
-<span> <img src="https://github.com/wdtheprovider/in-app-purchases-subscription/blob/master/app/src/main/res/drawable/s1.png" width="290" height="600">
- <span> <img src="https://github.com/wdtheprovider/in-app-purchases-subscription/blob/master/app/src/main/res/drawable/s2.png" width="290" height="600">
-<span> <img src="https://github.com/wdtheprovider/in-app-purchases-subscription/blob/master/app/src/main/res/drawable/s3.png" width="290" height="600">
-<span> <img src="https://github.com/wdtheprovider/in-app-purchases-subscription/blob/master/app/src/main/res/drawable/s4.png" width="290" height="600">
-<span> <img src="https://github.com/wdtheprovider/in-app-purchases-subscription/blob/master/app/src/main/res/drawable/s5.png" width="290" height="600">
-<span> <img src="https://github.com/wdtheprovider/in-app-purchases-subscription/blob/master/app/src/main/res/drawable/s6.png" width="290" height="600">
+<span> <img src="https://github.com/wdtheprovider/in-app-purchases-subscription/blob/master/app/src/main/res/drawable/splash.jpg" width="290" height="600">
+ <span> <img src="https://github.com/wdtheprovider/in-app-purchases-subscription/blob/master/app/src/main/res/drawable/p1.jpg" width="290" height="600">
+<span> <img src="https://github.com/wdtheprovider/in-app-purchases-subscription/blob/master/app/src/main/res/drawable/p2.jpg" width="290" height="600">
+<span> <img src="https://github.com/wdtheprovider/in-app-purchases-subscription/blob/master/app/src/main/res/drawable/p3.jpg" width="290" height="600">
+<span> <img src="https://github.com/wdtheprovider/in-app-purchases-subscription/blob/master/app/src/main/res/drawable/p4.jpg" width="290" height="600">
+<span> <img src="https://github.com/wdtheprovider/in-app-purchases-subscription/blob/master/app/src/main/res/drawable/p5.jpg" width="290" height="600">
+<span> <img src="https://github.com/wdtheprovider/in-app-purchases-subscription/blob/master/app/src/main/res/drawable/p6.jpg" width="290" height="600">
+<span> <img src="https://github.com/wdtheprovider/in-app-purchases-subscription/blob/master/app/src/main/res/drawable/p7.jpg" width="290" height="600">
+
 
 </span>
 
