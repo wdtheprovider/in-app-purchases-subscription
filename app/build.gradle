@@ -34,13 +34,11 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'com.google.firebase:firebase-crashlytics-buildtools:2.9.1'
 
-    implementation 'com.google.guava:guava:24.1-jre'
 
     def billing_version = "5.0.0"
-
     implementation "com.android.billingclient:billing:$billing_version"
-
     implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
+    implementation 'com.google.guava:guava:24.1-jre'
 
 
     testImplementation 'junit:junit:4.13.2'

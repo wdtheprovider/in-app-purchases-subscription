@@ -2,4 +2,6 @@
     <string name="app_name">SharCourse</string>
     <string name="product_id">premium</string>
     <string name="subscribe">Subscribe</string>
+    <string name="restore">Restore</string>
+    <string name="restore_purchases">Restore Purchases</string>
 </resources>

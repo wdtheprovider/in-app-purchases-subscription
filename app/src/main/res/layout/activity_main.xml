@@ -3,29 +3,76 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
-    android:padding="20dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/screen_bg_dark"
     tools:context=".MainActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:background="@color/orange"
+        android:layout_alignParentTop="true"
+        app:title="@string/app_name"
+        app:titleTextColor="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="?actionBarSize"/>
 
     <TextView
         android:id="@+id/txt_subscribed"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@id/toolbar"
         android:layout_centerInParent="true"
+        android:layout_marginTop="50dp"
         android:text="Not Subscribed"
         android:textAllCaps="true"
         android:textColor="@color/black"
         android:textSize="20sp"
         android:textStyle="bold" />
 
-    <Button
-        android:id="@+id/btn_subscribe"
-        android:layout_width="wrap_content"
-        android:textColor="@color/white"
+    <LinearLayout
+        android:gravity="center_horizontal"
+        android:id="@+id/subscriptions_group"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:text="@string/subscribe" />
+        android:layout_below="@id/txt_subscribed"
+        android:layout_margin="20dp"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/btn_subscribe"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Subscriptions"
+            android:textColor="@color/white" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:layout_below="@id/subscriptions_group"
+        android:orientation="horizontal"
+        android:weightSum="2">
+
+        <Button
+            android:id="@+id/btn_buy_coins"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_weight="1"
+            android:text="Buy Coins"
+            android:textColor="@color/white" />
+
+        <Button
+            android:id="@+id/btn_remove_ads"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_weight="1"
+            android:text="Remove Ads"
+            android:textColor="@color/white" />
+    </LinearLayout>
 
 
 </RelativeLayout>

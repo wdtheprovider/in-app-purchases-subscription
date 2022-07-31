@@ -6,9 +6,15 @@
         <entry key="..\:/Users/PC-WD/Desktop/AndroidStudio/sharcourseSUBSCRIPTION/app/src/main/res/layout/activity_main.xml" value="0.2" />
         <entry key="..\:/Users/PC-WD/Desktop/AndroidStudio/sharcourseSUBSCRIPTION/app/src/main/res/layout/activity_splash.xml" value="0.20833333333333334" />
         <entry key="..\:/Users/PC-WD/Desktop/AndroidStudio/sharcourseSUBSCRIPTION/app/src/main/res/layout/activity_store.xml" value="0.20833333333333334" />
+        <entry key="app/src/main/res/drawable-v24/rounded_rectangle_subscribe.xml" value="0.3285" />
+        <entry key="app/src/main/res/drawable/blue_round_bg.xml" value="0.2085" />
+        <entry key="app/src/main/res/drawable/btn_txt_selector.xml" value="0.3285" />
+        <entry key="app/src/main/res/drawable/rounded_rectangle.xml" value="0.3285" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.2907692307692308" />
         <entry key="app/src/main/res/layout/activity_splash.xml" value="0.2907692307692308" />
         <entry key="app/src/main/res/layout/activity_store.xml" value="0.2907692307692308" />
+        <entry key="app/src/main/res/layout/activity_subscriptions.xml" value="0.2681434983473556" />
+        <entry key="app/src/main/res/layout/product_item.xml" value="0.5705235799153647" />
       </map>
     </option>
   </component>

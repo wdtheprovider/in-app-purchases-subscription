@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Sharcourse">
         <activity
-            android:name=".StoreActivity"
+            android:name=".Subscriptions"
             android:exported="true" />
         <activity
             android:name=".MainActivity"

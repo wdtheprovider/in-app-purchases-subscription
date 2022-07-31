@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         //Opening the Store activity.
-        btn_subscribe.setOnClickListener(view -> startActivity(new Intent(this,StoreActivity.class)));
+        btn_subscribe.setOnClickListener(view -> startActivity(new Intent(this, Subscriptions.class)));
     }
 
     private void initViews() {
