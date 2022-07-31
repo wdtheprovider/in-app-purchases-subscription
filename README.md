@@ -2,7 +2,7 @@
 
 Consumable Item In-App Purchases: https://github.com/wdtheprovider/in-app-purchase
 
-In this repository i'm going to show you how to integrate In-App Purchase for Subscription of Google Play Billing version 4+ in 7 steps. I follow the officailly google 
+In this repository i'm going to show you how to integrate In-App Purchases of Google Play Billing version 4+ in 7 steps. I follow the officailly google 
  docs, i'm not using any third-party library
 
 Demo <br>
@@ -50,6 +50,7 @@ void showProducts(){}
 void launchPurchaseFlow(){}
 void verifySubPayment(Purchase purchases){}
 void checkSubscription(){}
+void restorePurchases(){}
 ```
 
 [**Step 1: Add the Google Play Billing Library dependency**](#step-1-add-the-google-play-billing-library-dependency)
@@ -75,9 +76,12 @@ void checkSubscription(){}
 //Add the Google Play Billing Library dependency to your app's build.gradle file as shown:
 
 dependencies {
-    def billingVersion = "5.0.0"
 
-    implementation "com.android.billingclient:billing:$billingVersion"
+    def billing_version = "5.0.0"
+    implementation "com.android.billingclient:billing:$billing_version"
+    implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
+    implementation 'com.google.guava:guava:24.1-jre'
+    
 }
 ```
 
@@ -139,21 +143,27 @@ dependencies {
 
 ```java
 @SuppressLint("SetTextI18n")
+   
     void showProducts() {
 
         ImmutableList<QueryProductDetailsParams.Product> productList = ImmutableList.of(
-                //Product 1 = index is 0
+                //Product 1
                 QueryProductDetailsParams.Product.newBuilder()
-                .setProductId("sub_premium")
+                .setProductId("one_week")
+                .setProductType(BillingClient.ProductType.SUBS)
+                .build() ,
+
+                //Product 2
+                QueryProductDetailsParams.Product.newBuilder()
+                .setProductId("one_month")
                 .setProductType(BillingClient.ProductType.SUBS)
                 .build(),
 
-                //Product 2 = index is 1
+                //Product 3
                 QueryProductDetailsParams.Product.newBuilder()
-                .setProductId("test_id_shar")
+                .setProductId("one_year")
                 .setProductType(BillingClient.ProductType.SUBS)
                 .build()
-
         );
 
         QueryProductDetailsParams params = QueryProductDetailsParams.newBuilder()
@@ -162,38 +172,37 @@ dependencies {
 
         billingClient.queryProductDetailsAsync(
                 params,
-                (billingResult, productDetailsList) -> {
+                (billingResult, prodDetailsList) -> {
                     // Process the result
-                    for (ProductDetails productDetails : productDetailsList) {
-                        if (productDetails.getProductId().equals("sub_premium")) {
-                            List<ProductDetails.SubscriptionOfferDetails> subDetails = productDetails.getSubscriptionOfferDetails();
-                            assert subDetails != null;
-                            Log.d("testOffer",subDetails.get(0).getOfferToken());
-                            txt_price.setText(subDetails.get(0).getPricingPhases().getPricingPhaseList().get(0).getFormattedPrice()+" Per Month");
-                            txt_price.setOnClickListener(view -> {
-                                launchPurchaseFlow(productDetails);
-                            });
-                        }
+                    productDetailsList.clear();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.d(TAG,"posted delayed");
 
-                        if (productDetails.getProductId().equals("test_id_shar")) {
-                            List<ProductDetails.SubscriptionOfferDetails> subDetails = productDetails.getSubscriptionOfferDetails();
-                            assert subDetails != null;
-                            Log.d("testOffer",subDetails.get(1).getOfferToken());
-                            offer_btn.setText(subDetails.get(1).getPricingPhases().getPricingPhaseList().get(0).getFormattedPrice()+" Per Month");
-                            offer_btn.setOnClickListener(view -> {
-                                launchPurchaseFlow(productDetails);
-                            });
+                            loadProducts.setVisibility(View.INVISIBLE);
+
+                            productDetailsList.addAll(prodDetailsList);
+                            Log.d(TAG,productDetailsList.size()+" number of products");
+
+                            adapter = new ProductDetailsAdapter(getApplicationContext(), productDetailsList, Subscriptions.this);
+                            recyclerView.setHasFixedSize(true);
+                            recyclerView.setLayoutManager(new LinearLayoutManager(Subscriptions.this, LinearLayoutManager.VERTICAL, false));
+                            recyclerView.setAdapter(adapter);
                         }
-                    }
+                    },2000);
+
                 }
         );
 
     }
+
     
 ```
 ### Step 5: Launch the purchase flow<br>
 
 ```java
+    
     void launchPurchaseFlow(ProductDetails productDetails) {
         assert productDetails.getSubscriptionOfferDetails() != null;
         ImmutableList<BillingFlowParams.ProductDetailsParams> productDetailsParamsList =
@@ -206,6 +215,7 @@ dependencies {
         BillingFlowParams billingFlowParams = BillingFlowParams.newBuilder()
                 .setProductDetailsParamsList(productDetailsParamsList)
                 .build();
+
         BillingResult billingResult = billingClient.launchBillingFlow(activity, billingFlowParams);
     }
     
@@ -224,12 +234,13 @@ dependencies {
         billingClient.acknowledgePurchase(acknowledgePurchaseParams, billingResult -> {
             if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
                 //user prefs to set premium
-                Toast.makeText(StoreActivity.this, "You are a premium user now", Toast.LENGTH_SHORT).show();
+                Toast.makeText(Subscriptions.this, "Subscription activated, Enjoy!", Toast.LENGTH_SHORT).show();
                 //Setting premium to 1
                 // 1 - premium
                 // 0 - no premium
                 prefs.setPremium(1);
-            }
+                startActivity(new Intent(this,MainActivity.class));
+                finish();            }
         });
 
         Log.d(TAG, "Purchase Token: " + purchases.getPurchaseToken());
