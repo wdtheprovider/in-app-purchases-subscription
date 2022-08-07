@@ -16,21 +16,6 @@
         app:title="@string/app_name"
         app:titleTextColor="@color/white" />
 
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:foregroundTint="@color/orange"
-        app:backgroundTint="@color/white"
-        android:backgroundTint="@color/orange"
-        android:layout_alignParentEnd="true"
-        android:textColor="@color/white"
-        android:tint="@color/orange"
-        android:text="@string/restore_purchases"
-        android:layout_alignParentBottom="true"
-        android:src="@drawable/ic_baseline_restore_24"
-        android:contentDescription="@string/restore_purchases"
-        android:layout_margin="16dp" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -48,7 +33,7 @@
                 android:layout_height="200dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_margin="20dp"
-                android:src="@drawable/ic_sub" />
+                android:src="@drawable/ic_icon_coin" />
 
             <RelativeLayout
                 android:id="@+id/cc"
@@ -58,7 +43,7 @@
                 android:padding="10dp">
 
                 <LinearLayout
-                    android:id="@+id/allFeatures"
+                    android:id="@+id/tx_coins_container"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
@@ -67,38 +52,13 @@
                     <ImageView
                         android:layout_width="34dp"
                         android:layout_height="34dp"
-                        android:src="@drawable/ic_baseline_check_circle_outline_24" />
+                        android:src="@drawable/ic_icon_coin" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
-                        android:text="All Features"
-                        android:textColor="@color/white"
-                        android:textSize="20sp"
-                        android:textStyle="bold" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/RemoveAds"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/allFeatures"
-                    android:layout_marginTop="10dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="34dp"
-                        android:layout_height="34dp"
-                        android:src="@drawable/ic_baseline_check_circle_outline_24" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:text="Removed Ads"
+                        android:text="Consumable Coins"
                         android:textColor="@color/white"
                         android:textSize="20sp"
                         android:textStyle="bold" />
@@ -109,7 +69,7 @@
                     android:id="@+id/recyclerview"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_below="@id/RemoveAds"
+                    android:layout_below="@id/tx_coins_container"
                     android:layout_marginTop="10dp"
                     android:visibility="visible" />
 
@@ -117,13 +77,44 @@
                     android:id="@+id/loadProducts"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/RemoveAds"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="100dp"
                     android:visibility="visible" />
 
 
             </RelativeLayout>
+
+
+            <LinearLayout
+                android:id="@+id/buttons"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+                <TextView
+                    android:id="@+id/txt_coins"
+                    android:layout_width="0dp"
+                    android:padding="10dp"
+                    android:text="12 Coins"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <Button
+                    android:id="@+id/btn_use"
+                    android:layout_margin="10dp"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Use Coin" />
+
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>

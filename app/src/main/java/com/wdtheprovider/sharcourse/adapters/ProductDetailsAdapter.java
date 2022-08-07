@@ -1,4 +1,4 @@
-package com.wdtheprovider.adapters;
+package com.wdtheprovider.sharcourse.adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -6,15 +6,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.billingclient.api.ProductDetails;
-import com.wdtheprovider.interfaces.RecycleViewInterface;
+import com.wdtheprovider.sharcourse.interfaces.RecycleViewInterface;
 import com.wdtheprovider.sharcourse.R;
 import java.util.List;
 

@@ -1,6 +1,7 @@
-package com.wdtheprovider.sharcourse;
+package com.wdtheprovider.sharcourse.activities;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -11,13 +12,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.billingclient.api.AcknowledgePurchaseParams;
@@ -27,14 +25,17 @@ import com.android.billingclient.api.BillingFlowParams;
 import com.android.billingclient.api.BillingResult;
 import com.android.billingclient.api.ProductDetails;
 import com.android.billingclient.api.Purchase;
+import com.android.billingclient.api.PurchasesUpdatedListener;
 import com.android.billingclient.api.QueryProductDetailsParams;
 import com.android.billingclient.api.QueryPurchasesParams;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.collect.ImmutableList;
-import com.wdtheprovider.adapters.ProductDetailsAdapter;
-import com.wdtheprovider.interfaces.RecycleViewInterface;
+import com.wdtheprovider.sharcourse.R;
+import com.wdtheprovider.sharcourse.adapters.ProductDetailsAdapter;
+import com.wdtheprovider.sharcourse.interfaces.RecycleViewInterface;
+import com.wdtheprovider.sharcourse.utilies.Prefs;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,12 +51,12 @@ public class Subscriptions extends AppCompatActivity implements RecycleViewInter
     ProgressBar loadProducts;
 
     RecyclerView recyclerView;
-    ProductDetailsAdapter adapter;
     Toolbar toolbar;
 
      Handler handler;
-
      ExtendedFloatingActionButton btn_restore_fab;
+
+     ProductDetailsAdapter adapter;
 
 
     @Override
@@ -66,19 +67,21 @@ public class Subscriptions extends AppCompatActivity implements RecycleViewInter
         initViews();
         handler = new Handler();
 
-
         activity = this;
         prefs = new Prefs(this);
-        //initializing the billing client
+
         billingClient = BillingClient.newBuilder(this)
                 .enablePendingPurchases()
                 .setListener(
-                        (billingResult, list) -> {
-                           if(billingResult.getResponseCode()==BillingClient.BillingResponseCode.OK && list !=null) {
-                               for (Purchase purchase: list){
-                                   verifySubPurchase(purchase);
-                               }
-                           }
+                        new PurchasesUpdatedListener() {
+                            @Override
+                            public void onPurchasesUpdated(@NonNull BillingResult billingResult, @Nullable List<Purchase> list) {
+                                if(billingResult.getResponseCode()==BillingClient.BillingResponseCode.OK && list !=null) {
+                                    for (Purchase purchase: list){
+                                        verifySubPurchase(purchase);
+                                    }
+                                }
+                            }
                         }
                 ).build();
 
@@ -92,7 +95,6 @@ public class Subscriptions extends AppCompatActivity implements RecycleViewInter
         });
 
     }
-
 
     void establishConnection() {
 
@@ -115,26 +117,34 @@ public class Subscriptions extends AppCompatActivity implements RecycleViewInter
     }
 
     @SuppressLint("SetTextI18n")
+
     void showProducts() {
 
         ImmutableList<QueryProductDetailsParams.Product> productList = ImmutableList.of(
                 //Product 1
                 QueryProductDetailsParams.Product.newBuilder()
-                .setProductId("one_week")
-                .setProductType(BillingClient.ProductType.SUBS)
-                .build() ,
+                        .setProductId("one_week")
+                        .setProductType(BillingClient.ProductType.SUBS)
+                        .build() ,
 
                 //Product 2
                 QueryProductDetailsParams.Product.newBuilder()
-                .setProductId("one_month")
-                .setProductType(BillingClient.ProductType.SUBS)
-                .build(),
+                        .setProductId("one_month")
+                        .setProductType(BillingClient.ProductType.SUBS)
+                        .build(),
 
                 //Product 3
                 QueryProductDetailsParams.Product.newBuilder()
-                .setProductId("one_year")
-                .setProductType(BillingClient.ProductType.SUBS)
-                .build()
+                        .setProductId("one_year")
+                        .setProductType(BillingClient.ProductType.SUBS)
+                        .build(),
+
+                QueryProductDetailsParams.Product.newBuilder()
+                        .setProductId("test_id_shar")
+                        .setProductType(BillingClient.ProductType.SUBS)
+                        .build()
+
+
         );
 
         QueryProductDetailsParams params = QueryProductDetailsParams.newBuilder()
@@ -169,7 +179,6 @@ public class Subscriptions extends AppCompatActivity implements RecycleViewInter
     }
 
 
-
     void launchPurchaseFlow(ProductDetails productDetails) {
         assert productDetails.getSubscriptionOfferDetails() != null;
         ImmutableList<BillingFlowParams.ProductDetailsParams> productDetailsParamsList =
@@ -185,6 +194,29 @@ public class Subscriptions extends AppCompatActivity implements RecycleViewInter
 
         BillingResult billingResult = billingClient.launchBillingFlow(activity, billingFlowParams);
     }
+
+
+
+    protected void onResume() {
+        super.onResume();
+        billingClient.queryPurchasesAsync(
+                QueryPurchasesParams.newBuilder().setProductType(BillingClient.ProductType.SUBS).build(),
+                (billingResult, list) -> {
+                    if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
+                        for (Purchase purchase : list) {
+                            if (purchase.getPurchaseState() == Purchase.PurchaseState.PURCHASED && !purchase.isAcknowledged()) {
+                                verifySubPurchase(purchase);
+                            }
+                        }
+                    }
+                }
+        );
+
+    }
+
+
+
+
 
 
     void verifySubPurchase(Purchase purchases) {
@@ -211,6 +243,10 @@ public class Subscriptions extends AppCompatActivity implements RecycleViewInter
         Log.d(TAG, "Purchase OrderID: " + purchases.getOrderId());
     }
 
+
+
+
+
     private void initViews() {
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -221,27 +257,12 @@ public class Subscriptions extends AppCompatActivity implements RecycleViewInter
 
     }
 
-    protected void onResume() {
-        super.onResume();
-        billingClient.queryPurchasesAsync(
-                QueryPurchasesParams.newBuilder().setProductType(BillingClient.ProductType.SUBS).build(),
-                (billingResult, list) -> {
-                    if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
-                        for (Purchase purchase : list) {
-                            if (purchase.getPurchaseState() == Purchase.PurchaseState.PURCHASED && !purchase.isAcknowledged()) {
-                                verifySubPurchase(purchase);
-                            }
-                        }
-                    }
-                }
-        );
-
-    }
-
     @Override
     public void onItemClick(int pos) {
-        launchPurchaseFlow(productDetailsList.get(pos));
+launchPurchaseFlow(productDetailsList.get(pos));
     }
+
+
 
 
     void restorePurchases(){
@@ -296,4 +317,6 @@ public class Subscriptions extends AppCompatActivity implements RecycleViewInter
     {
         Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show();
     }
+
+
 }

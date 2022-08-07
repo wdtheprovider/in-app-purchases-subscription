@@ -1,7 +1,9 @@
-package com.wdtheprovider.sharcourse;
+package com.wdtheprovider.sharcourse.utilies;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+
+import com.wdtheprovider.sharcourse.R;
 
 public class Prefs {
 
