@@ -33,14 +33,14 @@ Product IDs:
         productIds = new ArrayList<>();
         coins = new ArrayList<>();
 
-        productIds.add("10_coins_id ");
+        productIds.add("10_coins_id");
         coins.add(10);
 
-        productIds.add("20_coins_id ");
-        coins.add(2);
+        productIds.add("20_coins_id");
+        coins.add(20);
 
-        productIds.add("50_coins_id ");
-        coins.add(0);
+        productIds.add("50_coins_id");
+        coins.add(50);
 
 
 ```
