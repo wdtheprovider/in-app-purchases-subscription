@@ -14,7 +14,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -166,7 +165,7 @@ public class Subscriptions extends AppCompatActivity implements RecycleViewInter
                             productDetailsList.addAll(prodDetailsList);
                             Log.d(TAG,productDetailsList.size()+" number of products");
 
-                            adapter = new ProductDetailsAdapter(getApplicationContext(), productDetailsList, Subscriptions.this);
+                            adapter = new ProductDetailsAdapter(getApplicationContext(), productDetailsList, (RecycleViewInterface) Subscriptions.this);
                             recyclerView.setHasFixedSize(true);
                             recyclerView.setLayoutManager(new LinearLayoutManager(Subscriptions.this, LinearLayoutManager.VERTICAL, false));
                             recyclerView.setAdapter(adapter);

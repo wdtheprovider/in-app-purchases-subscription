@@ -1,5 +1,1 @@
-package com.wdtheprovider.sharcourse.interfaces;
-
-public interface RecycleViewInterface {
-    void onItemClick(int pos);
-}
+Buy the Interface Here: https://dingi.icu/store/product/in-app-purchase-recyclerview-productdetails-adapter-code/
