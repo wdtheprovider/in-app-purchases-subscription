@@ -57,4 +57,13 @@ public class Prefs {
         return sharedPreferences.getInt("Premium", 0);
     }
 
+    public boolean isRemoveAd(){
+        return  getBoolean("isRemoveAd", false);
+    }
+
+    public void setIsRemoveAd(boolean value){
+        editor.putBoolean("isRemoveAd",value);
+        editor.apply();
+    }
+
 }
