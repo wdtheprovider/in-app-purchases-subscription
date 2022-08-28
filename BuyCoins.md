@@ -19,7 +19,7 @@ Pre-requisite
 
 YouTube Video: Part-1 | Intro Demo: [https://youtu.be/nQrsVB7quKw ](https://www.youtube.com/watch?v=Ym1olBce2MI)<br>
 <br>YouTube Video: Part-2 | Configure Testing Device: https://youtu.be/j6wWVMj-fi8 <br>
-<br>YouTube Video: Part-3 | Integrating The Methods to purchase the products: Uploading soon <br>
+<br>YouTube Video: Part-3 | Integrating The Methods to purchase the products: [https://www.youtube.com/watch?v=7cf8yHdXMdA](https://www.youtube.com/watch?v=7cf8yHdXMdA)<br>
 
 ```
 Configure Your Testing device by adding the gmail account to internal testing testers 
