@@ -26,7 +26,7 @@ Configure Your Testing device by adding the gmail account to internal testing te
 and License testing (Watch the YouTube video for clarity: https://youtu.be/j6wWVMj-fi8 )
 
 
-Setup the in-app purchase subscription product in Google Play Console account
+Setup the in-app purchase product in Google Play Console account
 i have already created mine which are 
 Product IDs:
   
