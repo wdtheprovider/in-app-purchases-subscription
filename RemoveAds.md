@@ -181,28 +181,26 @@ dependencies {
 
 ```java
 
-  void handlePurchase(Purchase purchases) {
+ 
+    void handlePurchase(Purchase purchases) {
 
         if(!purchases.isAcknowledged()){
-        billingClient.acknowledgePurchase(AcknowledgePurchaseParams
-                .newBuilder()
-                .setPurchaseToken(purchases.getPurchaseToken())
-                .build(), billingResult -> {
+            billingClient.acknowledgePurchase(AcknowledgePurchaseParams
+                    .newBuilder()
+                    .setPurchaseToken(purchases.getPurchaseToken())
+                    .build(), billingResult -> {
 
-            if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
-                //use prefs to set setIsRemoveAd
-                Toast.makeText(RemoveAdsActivity.this, "Ads Turned off, Enjoy!", Toast.LENGTH_SHORT).show();
-                //Setting setIsRemoveAd to true
-                // true - No ads
-                // false - showing ads.
-                prefs.setIsRemoveAd(true);
-                startActivity(new Intent(RemoveAdsActivity.this, MainActivity.class));
-                finish();
-            }
-        });
-        Log.d(TAG, "Purchase Token: " + purchases.getPurchaseToken());
-        Log.d(TAG, "Purchase Time: " + purchases.getPurchaseTime());
-        Log.d(TAG, "Purchase OrderID: " + purchases.getOrderId());
+                if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
+                    //Setting setIsRemoveAd to true
+                    // true - No ads
+                    // false - showing ads.
+                    prefs.setIsRemoveAd(true);
+                  //  goBack();
+                }
+            });
+            Log.d(TAG, "Purchase Token: " + purchases.getPurchaseToken());
+            Log.d(TAG, "Purchase Time: " + purchases.getPurchaseTime());
+            Log.d(TAG, "Purchase OrderID: " + purchases.getOrderId());
         }
     }
 
