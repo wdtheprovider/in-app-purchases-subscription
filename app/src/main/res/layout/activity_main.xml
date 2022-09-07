@@ -1,127 +1,156 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:id="@+id/my_drawer_layout"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/screen_bg_dark"
     tools:context=".activities.MainActivity">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:background="@color/orange"
-        android:layout_alignParentTop="true"
-        app:title="@string/app_name"
-        app:titleTextColor="@color/white"
-        android:layout_width="match_parent"
-        android:layout_height="?actionBarSize"/>
-
-    <TextView
-        android:id="@+id/txt_subscribed"
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/drawer"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/toolbar"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        app:menu="@menu/menu" />
 
-        android:layout_centerInParent="true"
-        android:layout_marginTop="50dp"
-        android:text="Not Subscribed"
-        android:textAllCaps="true"
-        android:textColor="@color/white"
-        android:textSize="20sp"
-        android:textStyle="bold" />
-
-    <LinearLayout
-        android:gravity="center_horizontal"
-        android:id="@+id/subscriptions_group"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/txt_subscribed"
-        android:layout_margin="20dp"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-        <Button
-            android:id="@+id/btn_subscribe"
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:background="@color/orange"
+            android:layout_alignParentTop="true"
+            app:title="@string/app_name"
+            app:titleTextColor="@color/white"
+            android:layout_width="match_parent"
+            android:layout_height="?actionBarSize"/>
+
+        <TextView
+            android:id="@+id/txt_subscribed"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Subscriptions"
-            android:textColor="@color/white" />
+            android:layout_below="@id/toolbar"
 
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/container_2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/subscriptions_group"
-        android:orientation="horizontal"
-        android:padding="10dp"
-        android:weightSum="2">
+            android:layout_centerInParent="true"
+            android:layout_marginTop="50dp"
+            android:text="Not Subscribed"
+            android:textAllCaps="true"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
         <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_weight="1"
             android:gravity="center_horizontal"
+            android:id="@+id/subscriptions_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/txt_subscribed"
+            android:layout_margin="20dp"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/coins"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="20 Remaining Coins"
-                android:textColor="@color/white" />
-
             <Button
-                android:id="@+id/btn_buy_coins"
+                android:id="@+id/btn_subscribe"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:text="Buy Coins"
+                android:text="Subscriptions"
                 android:textColor="@color/white" />
 
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="0dp"
+            android:id="@+id/container_2"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_weight="1"
-            android:gravity="center_horizontal"
-            android:orientation="vertical">
+            android:layout_below="@id/subscriptions_group"
+            android:orientation="horizontal"
+            android:padding="10dp"
+            android:weightSum="2">
 
-            <TextView
-                android:id="@+id/OnOff"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="ON"
-                android:textColor="@color/white" />
-
-            <Button
-                android:id="@+id/btn_remove_ads"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_margin="10dp"
+                android:layout_gravity="center_horizontal"
                 android:layout_weight="1"
-                android:text="Remove Ads"
-                android:textColor="@color/white" />
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/coins"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="20 Remaining Coins"
+                    android:textColor="@color/white" />
+
+                <Button
+                    android:id="@+id/btn_buy_coins"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:text="Buy Coins"
+                    android:textColor="@color/white" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/OnOff"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ON"
+                    android:textColor="@color/white" />
+
+                <Button
+                    android:id="@+id/btn_remove_ads"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+                    android:text="Remove Ads"
+                    android:textColor="@color/white" />
+
+
+            </LinearLayout>
 
 
         </LinearLayout>
 
 
-    </LinearLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:id="@+id/menu"
+            android:textStyle="bold"
+            android:text="Menu"
+            android:layout_below="@id/container_2"
+            android:layout_centerHorizontal="true"
+            android:padding="20dp"
+            android:textSize="20sp"
+            android:textColor="@color/white"
+            android:layout_height="wrap_content"/>
 
-    <com.google.android.gms.ads.AdView
-        xmlns:ads="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/adView"
-        android:layout_margin="1dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true"
-        ads:adSize="SMART_BANNER"
-        ads:adUnitId="ca-app-pub-3940256099942544/6300978111">
-    </com.google.android.gms.ads.AdView>
+        <com.google.android.gms.ads.AdView
+            xmlns:ads="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/adView"
+            android:layout_margin="1dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"
+            ads:adSize="SMART_BANNER"
+            ads:adUnitId="ca-app-pub-3940256099942544/6300978111">
+        </com.google.android.gms.ads.AdView>
 
-</RelativeLayout>
+
+
+    </RelativeLayout>
+
+</androidx.drawerlayout.widget.DrawerLayout>

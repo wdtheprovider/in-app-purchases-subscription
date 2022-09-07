@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -281,7 +282,12 @@ public class BuyCoinActivity extends AppCompatActivity implements RecycleViewInt
 
     }
 
-
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        startActivity(new Intent(activity,MainActivity.class));
+        finish();
+    }
     @Override
     public void onItemClick(int pos) {
         launchPurchaseFlow(productDetailsList.get(pos));

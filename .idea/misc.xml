@@ -12,11 +12,14 @@
         <entry key="app/src/main/res/drawable/rounded_rectangle.xml" value="0.3285" />
         <entry key="app/src/main/res/layout/activity_buy_coin.xml" value="0.240625" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.2907692307692308" />
+        <entry key="app/src/main/res/layout/activity_remove_ads.xml" value="0.2546875" />
         <entry key="app/src/main/res/layout/activity_splash.xml" value="0.2907692307692308" />
         <entry key="app/src/main/res/layout/activity_store.xml" value="0.2907692307692308" />
         <entry key="app/src/main/res/layout/activity_subscriptions.xml" value="0.2681434983473556" />
         <entry key="app/src/main/res/layout/buycoins_item.xml" value="0.2546875" />
         <entry key="app/src/main/res/layout/product_item.xml" value="0.18409016927083344" />
+        <entry key="app/src/main/res/layout/remove_ads_item.xml" value="0.2546875" />
+        <entry key="app/src/main/res/menu/menu.xml" value="0.25925925925925924" />
       </map>
     </option>
   </component>

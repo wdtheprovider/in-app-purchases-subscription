@@ -261,7 +261,12 @@ public class Subscriptions extends AppCompatActivity implements RecycleViewInter
 launchPurchaseFlow(productDetailsList.get(pos));
     }
 
-
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        startActivity(new Intent(activity,MainActivity.class));
+        finish();
+    }
 
 
     void restorePurchases(){

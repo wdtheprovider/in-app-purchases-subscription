@@ -8,14 +8,15 @@
         android:fullBackupOnly="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/Theme.Sharcourse">
-
+        <activity
+            android:name=".activities.RemoveAdsActivity"
+            android:exported="false" />
         <activity
             android:name=".activities.BuyCoinActivity"
-            android:exported="true"
-            />
+            android:exported="true" />
         <activity
             android:name=".activities.Subscriptions"
             android:exported="true" />
@@ -34,7 +35,7 @@
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3940256099942544~3347511713"/>
+            android:value="ca-app-pub-3940256099942544~3347511713" />
     </application>
 
 </manifest>
