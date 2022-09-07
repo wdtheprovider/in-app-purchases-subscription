@@ -1,7 +1,6 @@
-# Welcome to in-app-purchase - Buy coins (Android Studio Java*)
+# Welcome to in-app-purchase - Remove Ads (Android Studio Java*)
 
 Consumable Item In-App Purchases: https://github.com/wdtheprovider/in-app-purchase
-
 
 In this repository i'm going to show you how to integrate In-App Purchases of Google Play Billing version 5+ in 8 steps. I follow the officailly google 
  docs, i'm not using any third-party library
@@ -17,31 +16,14 @@ Pre-requisite
 - Published App on Play Store
 - Tester Device with GMS
 
-YouTube Video: Part-1 | Intro Demo: [https://youtu.be/nQrsVB7quKw ](https://www.youtube.com/watch?v=Ym1olBce2MI)<br>
-<br>YouTube Video: Part-2 | Configure Testing Device: https://youtu.be/j6wWVMj-fi8 <br>
-<br>YouTube Video: Part-3 | Integrating The Methods to purchase the products: [https://www.youtube.com/watch?v=7cf8yHdXMdA](https://www.youtube.com/watch?v=7cf8yHdXMdA)<br>
 
-```
 Configure Your Testing device by adding the gmail account to internal testing testers 
 and License testing (Watch the YouTube video for clarity: https://youtu.be/j6wWVMj-fi8 )
 
-
+```
 Setup the in-app purchase product in Google Play Console account
 i have already created mine which are 
-Product IDs:
-  
-        productIds = new ArrayList<>();
-        coins = new ArrayList<>();
-
-        productIds.add("10_coins_id");
-        coins.add(10);
-
-        productIds.add("20_coins_id");
-        coins.add(20);
-
-        productIds.add("50_coins_id");
-        coins.add(50);
-
+Product ID: remove_ads_id
 
 ```
 
@@ -51,9 +33,8 @@ The following methods (These are the methods you need for the IAP System to work
 void establishConnection(){}
 void showProducts(){}
 void launchPurchaseFlow(){}
-void verifySubPayment(Purchase purchases){}
-void checkSubscription(){}
-void giveUserCoins (){}
+void handlePurchase(Purchase purchases){}
+void restorePurchase(){}
 ```
 
 [**Step 1: Add the Google Play Billing Library dependency**](#step-1-add-the-google-play-billing-library-dependency)
@@ -69,8 +50,6 @@ void giveUserCoins (){}
 [**Step 6: Processing purchases / Verify Payment**](#step-6-processing-purchases--verify-payment)
 
 [**Step 7: Handling pending transactions**](#step-7-handling-pending-transactions)
-
-[**Step 8: Give user coins **](#Give-user-coins)
 
 <br> Learn More: https://developer.android.com/google/play/billing/integrate
 
@@ -101,19 +80,16 @@ dependencies {
     billingClient = BillingClient.newBuilder(this)
                 .enablePendingPurchases()
                 .setListener(
-                        new PurchasesUpdatedListener() {
-                            @Override
-                            public void onPurchasesUpdated(@NonNull BillingResult billingResult, @Nullable List<Purchase> list) {
-                               if(billingResult.getResponseCode()==BillingClient.BillingResponseCode.OK && list !=null) {
-                                   for (Purchase purchase: list){
-                                       verifySubPurchase(purchase);
-                                   }
-                               }
+                        (billingResult, list) -> {
+                            if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK && list != null) {
+                                for (Purchase purchase : list) {
+                                    handlePurchase(purchase);
+                                }
                             }
                         }
                 ).build();
 
-        //start the connection after initializing the billing client
+ //start the connection after initializing the billing client
         establishConnection();
                 
 ```
@@ -121,35 +97,39 @@ dependencies {
 
 ```java
  
-    void connectGooglePlayBilling() {
-        billingClient.startConnection(new BillingClientStateListener() {
-            @Override
-            public void onBillingServiceDisconnected() {
-                connectGooglePlayBilling();
-            }
 
+    void establishConnection() {
+
+        billingClient.startConnection(new BillingClientStateListener() {
             @Override
             public void onBillingSetupFinished(@NonNull BillingResult billingResult) {
                 if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
+                    // The BillingClient is ready. You can query purchases here.
                     showProducts();
                 }
             }
-        });
 
+            @Override
+            public void onBillingServiceDisconnected() {
+                // Try to restart the connection on the next request to
+                // Google Play by calling the startConnection() method.
+                establishConnection();
+            }
+        });
     }
     
 ```
 ### Step 4: Show products available to buy<br>
 
 ```java
-@SuppressLint("SetTextI18n")
-   
+
+  @SuppressLint("SetTextI18n")
     void showProducts() {
 
         ImmutableList<QueryProductDetailsParams.Product> productList = ImmutableList.of(
                 //Product 1
                 QueryProductDetailsParams.Product.newBuilder()
-                        .setProductId("coins_id")
+                        .setProductId("remove_ads_id")
                         .setProductType(BillingClient.ProductType.INAPP)
                         .build()
         );
@@ -158,32 +138,31 @@ dependencies {
                 .setProductList(productList)
                 .build();
 
-        billingClient.queryProductDetailsAsync(params, (billingResult, list) -> {
-            productDetailsList.clear();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    Log.d(TAG, "posted delayed");
-                    loadProducts.setVisibility(View.INVISIBLE); //
-                    productDetailsList.addAll(list);
-                    Log.d(TAG, productDetailsList.size() + " number of products");
-                    adapter = new BuyCoinsAdapter(getApplicationContext(), productDetailsList, BuyCoinActivity.this);
-                    recyclerView.setHasFixedSize(true);
-                    recyclerView.setLayoutManager(new LinearLayoutManager(BuyCoinActivity.this, LinearLayoutManager.VERTICAL, false));
-                    recyclerView.setAdapter(adapter);
-                }
-            }, 2000);
-        });
-    }
+        billingClient.queryProductDetailsAsync(
+                params,
+                (billingResult, prodDetailsList) -> {
+                    // Process the result
+                    productDetailsList.clear();
+                    handler.postDelayed(() -> {
+                        loadProducts.setVisibility(View.INVISIBLE);
+                        productDetailsList.addAll(prodDetailsList);
+                        Log.d(TAG, productDetailsList.size() + " number of products");
+                        adapter = new RemoveAdsAdapter(getApplicationContext(), productDetailsList, (RecycleViewInterface) RemoveAdsActivity.this);
+                        recyclerView.setHasFixedSize(true);
+                        recyclerView.setLayoutManager(new LinearLayoutManager(RemoveAdsActivity.this, LinearLayoutManager.VERTICAL, false));
+                        recyclerView.setAdapter(adapter);
+                    }, 2000);
 
+                }
+        );
+
+    }
     
 ```
 ### Step 5: Launch the purchase flow<br>
 
 ```java
-  
-     void launchPurchaseFlow(ProductDetails productDetails) {
-
+   void launchPurchaseFlow(ProductDetails productDetails) {
         ImmutableList<BillingFlowParams.ProductDetailsParams> productDetailsParamsList =
                 ImmutableList.of(
                         BillingFlowParams.ProductDetailsParams.newBuilder()
@@ -197,34 +176,42 @@ dependencies {
         BillingResult billingResult = billingClient.launchBillingFlow(activity, billingFlowParams);
     }
 
-
-    
 ```
 ### Step 6: Processing purchases / Verify Payment<br>
 
 ```java
-  void verifyPurchase(Purchase purchase) {
-        ConsumeParams consumeParams = ConsumeParams.newBuilder()
-                .setPurchaseToken(purchase.getPurchaseToken())
-                .build();
-        ConsumeResponseListener listener = (billingResult, s) -> {
-            if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
-                giveUserCoins(purchase);
-            }
-        };
 
-        billingClient.consumeAsync(consumeParams, listener);
+ 
+    void handlePurchase(Purchase purchases) {
 
+        if(!purchases.isAcknowledged()){
+            billingClient.acknowledgePurchase(AcknowledgePurchaseParams
+                    .newBuilder()
+                    .setPurchaseToken(purchases.getPurchaseToken())
+                    .build(), billingResult -> {
 
+                if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
+                    //Setting setIsRemoveAd to true
+                    // true - No ads
+                    // false - showing ads.
+                    prefs.setIsRemoveAd(true);
+                  //  goBack();
+                }
+            });
+            Log.d(TAG, "Purchase Token: " + purchases.getPurchaseToken());
+            Log.d(TAG, "Purchase Time: " + purchases.getPurchaseTime());
+            Log.d(TAG, "Purchase OrderID: " + purchases.getOrderId());
+        }
     }
+
     
 ```
 
 ### Step 7: Handling pending transactions<br>
 
 ```java
-   
-    protected void onResume() {
+  
+ protected void onResume() {
         super.onResume();
         billingClient.queryPurchasesAsync(
                 QueryPurchasesParams.newBuilder().setProductType(BillingClient.ProductType.INAPP).build(),
@@ -232,46 +219,52 @@ dependencies {
                     if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
                         for (Purchase purchase : list) {
                             if (purchase.getPurchaseState() == Purchase.PurchaseState.PURCHASED && !purchase.isAcknowledged()) {
-                                verifyPurchase(purchase);
+                                handlePurchase(purchase);
                             }
                         }
                     }
                 }
         );
-
     }
 
-    
 ```
 
 
-### Step 8: Give user coins <br>
+### Step 8: Restore Purchase<br>
 
 ```java
-
   
-    @SuppressLint("SetTextI18n")
-    void giveUserCoins(Purchase purchase) {
-
-        Log.d("TestINAPP", purchase.getProducts().get(0));
-        Log.d("TestINAPP", purchase.getQuantity() + " Quantity");
-
-        for(int i=0;i<productIds.size();i++){
-            if(purchase.getProducts().get(0).equals(productIds.get(i))){
-                Log.d(TAG,"Balance "+prefs.getInt("coins",0)+ " Coins");
-                Log.d(TAG,"Allocating "+coins.get(i) + " Coins");
-
-                //set coins
-                prefs.setInt("coins",coins.get(i) + prefs.getInt("coins",0));
-
-                Log.d(TAG,"New Balance "+prefs.getInt("coins",0)+ " Coins");
-
-                //Update UI
-                txt_coins.setText(prefs.getInt("coins",0)+"");
+    void restorePurchases() {
+        billingClient = BillingClient.newBuilder(this).enablePendingPurchases().setListener((billingResult, list) -> {
+        }).build();
+        final BillingClient finalBillingClient = billingClient;
+        billingClient.startConnection(new BillingClientStateListener() {
+            @Override
+            public void onBillingServiceDisconnected() {
+                establishConnection();
             }
-        }
+
+            @Override
+            public void onBillingSetupFinished(@NonNull BillingResult billingResult) {
+                if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
+                    finalBillingClient.queryPurchasesAsync(
+                            QueryPurchasesParams.newBuilder().setProductType(BillingClient.ProductType.INAPP).build(), (billingResult1, list) -> {
+                                if (billingResult1.getResponseCode() == BillingClient.BillingResponseCode.OK) {
+                                    if (list.size() > 0) {
+                                        prefs.setIsRemoveAd(true); // set true to activate remove ad feature
+                                        showSnackbar(btn_restore_fab, "Successfully restored");
+                                    } else {
+                                        Log.d(TAG, "Oops, No purchase found.");
+                                        showSnackbar(btn_restore_fab, "Oops, No purchase found.");
+                                        prefs.setIsRemoveAd(false); // set false to de-activate remove ad feature
+                                    }
+                                }
+                            });
+                }
+            }
+        });
     }
- 
+
 ```
 
 <br> 
