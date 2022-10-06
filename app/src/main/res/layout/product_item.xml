@@ -20,13 +20,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
-            android:text="Price and duration"
+            android:text="@string/price_and_duration"
             android:textColor="@color/white"
             android:textSize="18sp"
             android:textStyle="bold" />
-
-
     </androidx.cardview.widget.CardView>
-
-
 </RelativeLayout>

@@ -1,22 +1,20 @@
 package com.wdtheprovider.sharcourse.activities;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingClientStateListener;
@@ -26,9 +24,9 @@ import com.android.billingclient.api.ConsumeParams;
 import com.android.billingclient.api.ConsumeResponseListener;
 import com.android.billingclient.api.ProductDetails;
 import com.android.billingclient.api.Purchase;
-import com.android.billingclient.api.PurchasesUpdatedListener;
 import com.android.billingclient.api.QueryProductDetailsParams;
 import com.android.billingclient.api.QueryPurchasesParams;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.collect.ImmutableList;
 import com.wdtheprovider.sharcourse.R;
 import com.wdtheprovider.sharcourse.adapters.BuyCoinsAdapter;
@@ -45,7 +43,6 @@ public class BuyCoinActivity extends AppCompatActivity implements RecycleViewInt
     RecyclerView recyclerView;
     TextView txt_coins;
     List<ProductDetails> productDetailsList;
-    String TAG = "TestINAPP";
     Activity activity;
     Prefs prefs;
     Toolbar toolbar;
@@ -55,7 +52,6 @@ public class BuyCoinActivity extends AppCompatActivity implements RecycleViewInt
     ArrayList<Integer> coins;
     ArrayList<String> productIds;
 
-
     @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,18 +60,13 @@ public class BuyCoinActivity extends AppCompatActivity implements RecycleViewInt
 
         initViews();
 
-
-
         billingClient = BillingClient.newBuilder(this)
                 .enablePendingPurchases()
                 .setListener(
-                        new PurchasesUpdatedListener() {
-                            @Override
-                            public void onPurchasesUpdated(@NonNull BillingResult billingResult, @Nullable List<Purchase> list) {
-                                if(billingResult.getResponseCode()==BillingClient.BillingResponseCode.OK && list !=null) {
-                                    for (Purchase purchase: list){
-                                        verifyPurchase(purchase);
-                                    }
+                        (billingResult, list) -> {
+                            if(billingResult.getResponseCode()==BillingClient.BillingResponseCode.OK && list !=null) {
+                                for (Purchase purchase: list){
+                                    verifyPurchase(purchase);
                                 }
                             }
                         }
@@ -84,16 +75,18 @@ public class BuyCoinActivity extends AppCompatActivity implements RecycleViewInt
         //start the connection after initializing the billing client
         connectGooglePlayBilling();
 
-
         btn_use_coins.setOnClickListener(v -> {
-            //get the current saved coins in the sharePrefs - prefs.getInt("coins",0)
-            // and minus - 1 then setInt() - like updating the coins
-            prefs.setInt("coins", prefs.getInt("coins", 0) - 1);
-            //setText to the UI
-            txt_coins.setText(prefs.getInt("coins", 0)+"");
+            if(prefs.getInt("coins", 0)>0) {
+                //get the current saved coins in the sharePrefs - prefs.getInt("coins",0)
+                // and minus - 1 then setInt() - like updating the coins
+                prefs.setInt("coins", prefs.getInt("coins", 0) - 1);
+                //setText to the UI
+                txt_coins.setText(prefs.getInt("coins", 0) + " Coin(s)");
+            }else{
+                showSnackBar(btn_use_coins,"Ran out of coins, please recharge.");
+            }
         });
     }
-
 
     void connectGooglePlayBilling() {
         billingClient.startConnection(new BillingClientStateListener() {
@@ -109,10 +102,7 @@ public class BuyCoinActivity extends AppCompatActivity implements RecycleViewInt
                 }
             }
         });
-
     }
-
-
 
     @SuppressLint("SetTextI18n")
 
@@ -144,23 +134,16 @@ public class BuyCoinActivity extends AppCompatActivity implements RecycleViewInt
 
         billingClient.queryProductDetailsAsync(params, (billingResult, list) -> {
             productDetailsList.clear();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    Log.d(TAG, "posted delayed");
-                    loadProducts.setVisibility(View.INVISIBLE); //
-                    productDetailsList.addAll(list);
-                    Log.d(TAG, productDetailsList.size() + " number of products");
-                    adapter = new BuyCoinsAdapter(getApplicationContext(), productDetailsList, BuyCoinActivity.this);
-                    recyclerView.setHasFixedSize(true);
-                    recyclerView.setLayoutManager(new LinearLayoutManager(BuyCoinActivity.this, LinearLayoutManager.VERTICAL, false));
-                    recyclerView.setAdapter(adapter);
-                }
+            handler.postDelayed(() -> {
+                loadProducts.setVisibility(View.INVISIBLE); //
+                productDetailsList.addAll(list);
+                adapter = new BuyCoinsAdapter(getApplicationContext(), productDetailsList, BuyCoinActivity.this);
+                recyclerView.setHasFixedSize(true);
+                recyclerView.setLayoutManager(new LinearLayoutManager(BuyCoinActivity.this, LinearLayoutManager.VERTICAL, false));
+                recyclerView.setAdapter(adapter);
             }, 2000);
         });
     }
-
-
 
     void launchPurchaseFlow(ProductDetails productDetails) {
 
@@ -174,9 +157,8 @@ public class BuyCoinActivity extends AppCompatActivity implements RecycleViewInt
                 .setProductDetailsParamsList(productDetailsParamsList)
                 .build();
 
-        BillingResult billingResult = billingClient.launchBillingFlow(activity, billingFlowParams);
+         billingClient.launchBillingFlow(activity, billingFlowParams);
     }
-
 
     void verifyPurchase(Purchase purchase) {
         ConsumeParams consumeParams = ConsumeParams.newBuilder()
@@ -189,65 +171,6 @@ public class BuyCoinActivity extends AppCompatActivity implements RecycleViewInt
         };
         billingClient.consumeAsync(consumeParams, listener);
     }
-
-
-
-
-    @SuppressLint("SetTextI18n")
-    void giveUserCoins(Purchase purchase) {
-
-        Log.d("TestINAPP", purchase.getProducts().get(0));
-        Log.d("TestINAPP", purchase.getQuantity() + " Quantity");
-
-
-        /*
-        productIds.add("10_coins_id");
-        coins.add(10);
-
-        productIds.add("20_coins_id");
-        coins.add(20);
-
-        productIds.add("50_coins_id");
-        coins.add(50);
-         */
-
-
-        for(int i=0;i<productIds.size();i++){
-            if(purchase.getProducts().get(0).equals(productIds.get(i))){
-                Log.d(TAG,"Balance "+prefs.getInt("coins",0)+ " Coins");
-                Log.d(TAG,"Allocating "+coins.get(i) + " Coins");
-
-                //set coins
-                prefs.setInt("coins",coins.get(i) + prefs.getInt("coins",0));
-
-                Log.d(TAG,"New Balance "+prefs.getInt("coins",0)+ " Coins");
-
-                //Update UI
-                txt_coins.setText(prefs.getInt("coins",0)+"");
-            }
-        }
-    }
-
-
-
-    protected void onResume() {
-        super.onResume();
-        billingClient.queryPurchasesAsync(
-                QueryPurchasesParams.newBuilder().setProductType(BillingClient.ProductType.INAPP).build(),
-                (billingResult, list) -> {
-                    if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
-                        for (Purchase purchase : list) {
-                            if (purchase.getPurchaseState() == Purchase.PurchaseState.PURCHASED && !purchase.isAcknowledged()) {
-                                verifyPurchase(purchase);
-                            }
-                        }
-                    }
-                }
-        );
-
-    }
-
-
 
     @SuppressLint("SetTextI18n")
     private void initViews() {
@@ -266,20 +189,45 @@ public class BuyCoinActivity extends AppCompatActivity implements RecycleViewInt
 
         productDetailsList = new ArrayList<>();
 
-        txt_coins.setText(""+prefs.getInt("coins",0));
+        txt_coins.setText(prefs.getInt("coins",0)+ " Coin(s)");
 
         productIds = new ArrayList<>();
         coins = new ArrayList<>();
-
         productIds.add("10_coins_id");
         coins.add(10);
-
         productIds.add("20_coins_id");
         coins.add(20);
-
         productIds.add("50_coins_id");
         coins.add(50);
 
+    }
+
+    @SuppressLint("SetTextI18n")
+    void giveUserCoins(Purchase purchase) {
+        for(int i=0;i<productIds.size();i++){
+            if(purchase.getProducts().get(0).equals(productIds.get(i))){
+                //set coins
+                prefs.setInt("coins",coins.get(i) * purchase.getQuantity() + prefs.getInt("coins",0));
+                //Update UI
+                txt_coins.setText(prefs.getInt("coins",0)+" Coin(s)");
+            }
+        }
+    }
+
+    protected void onResume() {
+        super.onResume();
+        billingClient.queryPurchasesAsync(
+                QueryPurchasesParams.newBuilder().setProductType(BillingClient.ProductType.INAPP).build(),
+                (billingResult, list) -> {
+                    if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
+                        for (Purchase purchase : list) {
+                            if (purchase.getPurchaseState() == Purchase.PurchaseState.PURCHASED && !purchase.isAcknowledged()) {
+                                verifyPurchase(purchase);
+                            }
+                        }
+                    }
+                }
+        );
     }
 
     @Override
@@ -291,5 +239,10 @@ public class BuyCoinActivity extends AppCompatActivity implements RecycleViewInt
     @Override
     public void onItemClick(int pos) {
         launchPurchaseFlow(productDetailsList.get(pos));
+    }
+
+    public void showSnackBar(View view, String message)
+    {
+        Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show();
     }
 }

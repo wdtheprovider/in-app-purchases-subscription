@@ -17,8 +17,6 @@ public class Prefs {
         editor = sharedPreferences.edit();
     }
 
-
-
     public void setInt(String key,int value) {
         editor.putInt(key, value);
         editor.apply();
@@ -33,7 +31,6 @@ public class Prefs {
         editor.putInt("Premium", value);
         editor.apply();
     }
-
 
     public void setBoolean(String key, boolean value) {
         editor.putBoolean(key, value);

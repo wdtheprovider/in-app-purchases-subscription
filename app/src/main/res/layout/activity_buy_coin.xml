@@ -29,8 +29,8 @@
 
             <ImageView
                 android:id="@+id/imgview"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_margin="20dp"
                 android:src="@drawable/ic_icon_coin" />

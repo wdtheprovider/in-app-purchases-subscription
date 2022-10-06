@@ -46,7 +46,7 @@
                 android:id="@+id/imgview"
                 android:layout_width="wrap_content"
                 android:textSize="20sp"
-                android:text="Non - Consumable"
+                android:text="@string/non_consumable"
                 android:layout_marginTop="20dp"
                 android:textColor="@color/white"
                 android:layout_height="wrap_content"
@@ -77,7 +77,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
-                        android:text="Removed Ads"
+                        android:text="@string/removed_ads"
                         android:textColor="@color/white"
                         android:textSize="20sp"
                         android:textStyle="bold" />
@@ -100,8 +100,6 @@
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="100dp"
                     android:visibility="visible" />
-
-
             </RelativeLayout>
         </LinearLayout>
     </ScrollView>

@@ -1,21 +1,19 @@
 package com.wdtheprovider.sharcourse.activities;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.billingclient.api.AcknowledgePurchaseParams;
 import com.android.billingclient.api.BillingClient;
@@ -24,39 +22,30 @@ import com.android.billingclient.api.BillingFlowParams;
 import com.android.billingclient.api.BillingResult;
 import com.android.billingclient.api.ProductDetails;
 import com.android.billingclient.api.Purchase;
-import com.android.billingclient.api.PurchasesUpdatedListener;
 import com.android.billingclient.api.QueryProductDetailsParams;
 import com.android.billingclient.api.QueryPurchasesParams;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.collect.ImmutableList;
 import com.wdtheprovider.sharcourse.R;
-import com.wdtheprovider.sharcourse.adapters.ProductDetailsAdapter;
+import com.wdtheprovider.sharcourse.adapters.SubscriptionAdapter;
 import com.wdtheprovider.sharcourse.interfaces.RecycleViewInterface;
 import com.wdtheprovider.sharcourse.utilies.Prefs;
-
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Subscriptions extends AppCompatActivity implements RecycleViewInterface {
-
-    String TAG = "TestINAPP";
     Activity activity;
     Prefs prefs;
     private BillingClient billingClient;
-
     List<ProductDetails> productDetailsList;
     ProgressBar loadProducts;
-
     RecyclerView recyclerView;
     Toolbar toolbar;
-
-     Handler handler;
-     ExtendedFloatingActionButton btn_restore_fab;
-
-     ProductDetailsAdapter adapter;
-
+    Handler handler;
+    ExtendedFloatingActionButton btn_restore_fab;
+    SubscriptionAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,13 +61,10 @@ public class Subscriptions extends AppCompatActivity implements RecycleViewInter
         billingClient = BillingClient.newBuilder(this)
                 .enablePendingPurchases()
                 .setListener(
-                        new PurchasesUpdatedListener() {
-                            @Override
-                            public void onPurchasesUpdated(@NonNull BillingResult billingResult, @Nullable List<Purchase> list) {
-                                if(billingResult.getResponseCode()==BillingClient.BillingResponseCode.OK && list !=null) {
-                                    for (Purchase purchase: list){
-                                        verifySubPurchase(purchase);
-                                    }
+                        (billingResult, list) -> {
+                            if(billingResult.getResponseCode()==BillingClient.BillingResponseCode.OK && list !=null) {
+                                for (Purchase purchase: list){
+                                    verifySubPurchase(purchase);
                                 }
                             }
                         }
@@ -89,14 +75,12 @@ public class Subscriptions extends AppCompatActivity implements RecycleViewInter
 
         //restore purchases
         btn_restore_fab.setOnClickListener(v -> {
-            Log.d(TAG,"CLICKED RESTORE");
             restorePurchases();
         });
 
     }
 
     void establishConnection() {
-
         billingClient.startConnection(new BillingClientStateListener() {
             @Override
             public void onBillingSetupFinished(@NonNull BillingResult billingResult) {
@@ -136,13 +120,7 @@ public class Subscriptions extends AppCompatActivity implements RecycleViewInter
                 QueryProductDetailsParams.Product.newBuilder()
                         .setProductId("one_year")
                         .setProductType(BillingClient.ProductType.SUBS)
-                        .build(),
-
-                QueryProductDetailsParams.Product.newBuilder()
-                        .setProductId("test_id_shar")
-                        .setProductType(BillingClient.ProductType.SUBS)
                         .build()
-
 
         );
 
@@ -155,28 +133,19 @@ public class Subscriptions extends AppCompatActivity implements RecycleViewInter
                 (billingResult, prodDetailsList) -> {
                     // Process the result
                     productDetailsList.clear();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            Log.d(TAG,"posted delayed");
-
-                            loadProducts.setVisibility(View.INVISIBLE);
-
-                            productDetailsList.addAll(prodDetailsList);
-                            Log.d(TAG,productDetailsList.size()+" number of products");
-
-                            adapter = new ProductDetailsAdapter(getApplicationContext(), productDetailsList, (RecycleViewInterface) Subscriptions.this);
-                            recyclerView.setHasFixedSize(true);
-                            recyclerView.setLayoutManager(new LinearLayoutManager(Subscriptions.this, LinearLayoutManager.VERTICAL, false));
-                            recyclerView.setAdapter(adapter);
-                        }
+                    handler.postDelayed(() -> {
+                        loadProducts.setVisibility(View.INVISIBLE);
+                        productDetailsList.addAll(prodDetailsList);
+                        adapter = new SubscriptionAdapter(getApplicationContext(), productDetailsList, Subscriptions.this);
+                        recyclerView.setHasFixedSize(true);
+                        recyclerView.setLayoutManager(new LinearLayoutManager(Subscriptions.this, LinearLayoutManager.VERTICAL, false));
+                        recyclerView.setAdapter(adapter);
                     },2000);
 
                 }
         );
 
     }
-
 
     void launchPurchaseFlow(ProductDetails productDetails) {
         assert productDetails.getSubscriptionOfferDetails() != null;
@@ -191,10 +160,8 @@ public class Subscriptions extends AppCompatActivity implements RecycleViewInter
                 .setProductDetailsParamsList(productDetailsParamsList)
                 .build();
 
-        BillingResult billingResult = billingClient.launchBillingFlow(activity, billingFlowParams);
+        billingClient.launchBillingFlow(activity, billingFlowParams);
     }
-
-
 
     protected void onResume() {
         super.onResume();
@@ -210,12 +177,7 @@ public class Subscriptions extends AppCompatActivity implements RecycleViewInter
                     }
                 }
         );
-
     }
-
-
-
-
 
 
     void verifySubPurchase(Purchase purchases) {
@@ -236,15 +198,7 @@ public class Subscriptions extends AppCompatActivity implements RecycleViewInter
                 startActivity(new Intent(this,MainActivity.class));
                 finish();            }
         });
-
-        Log.d(TAG, "Purchase Token: " + purchases.getPurchaseToken());
-        Log.d(TAG, "Purchase Time: " + purchases.getPurchaseTime());
-        Log.d(TAG, "Purchase OrderID: " + purchases.getOrderId());
     }
-
-
-
-
 
     private void initViews() {
         toolbar = findViewById(R.id.toolbar);
@@ -286,41 +240,22 @@ launchPurchaseFlow(productDetailsList.get(pos));
                     finalBillingClient.queryPurchasesAsync(
                             QueryPurchasesParams.newBuilder().setProductType(BillingClient.ProductType.SUBS).build(), (billingResult1, list) -> {
                                 if (billingResult1.getResponseCode() == BillingClient.BillingResponseCode.OK){
-
                                     if(list.size()>0){
                                         prefs.setPremium(1); // set 1 to activate premium feature
-                                        showSnackbar(btn_restore_fab, "Successfully restored");
-                                        Toast.makeText(Subscriptions.this, "Successfully restored", Toast.LENGTH_SHORT).show();
-                                        Log.d(TAG,"Successfully restored");
-
-
-                                        int i = 0;
-                                        for (Purchase purchase: list){
-                                            //Here you can manage each product, if you have multiple subscription
-                                            Log.d("testOffer",purchase.getOriginalJson()); // Get to see the order information
-                                            Log.d("testOffer", " index" + i);
-                                            i++;
-                                        }
-
+                                        showSnackBar(btn_restore_fab, "Successfully restored");
                                     }else {
-                                        Log.d(TAG,"Oops, No purchase found.");
-                                        showSnackbar(btn_restore_fab, "Oops, No purchase found.");
-                                        Toast.makeText(Subscriptions.this, "Oops, No purchase found.", Toast.LENGTH_SHORT).show();
+                                        showSnackBar(btn_restore_fab, "Oops, No purchase found.");
                                         prefs.setPremium(0); // set 0 to de-activate premium feature
                                     }
                                 }
                             });
-
                 }
-
             }
         });
     }
 
-    public void showSnackbar(View view, String message)
+    public void showSnackBar(View view, String message)
     {
         Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show();
     }
-
-
 }

@@ -44,8 +44,8 @@
 
             <ImageView
                 android:id="@+id/imgview"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_margin="20dp"
                 android:src="@drawable/ic_sub" />
@@ -73,7 +73,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
-                        android:text="All Features"
+                        android:text="@string/all_features"
                         android:textColor="@color/white"
                         android:textSize="20sp"
                         android:textStyle="bold" />
@@ -98,7 +98,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
-                        android:text="Removed Ads"
+                        android:text="@string/remove_ads"
                         android:textColor="@color/white"
                         android:textSize="20sp"
                         android:textStyle="bold" />
@@ -121,8 +121,6 @@
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="100dp"
                     android:visibility="visible" />
-
-
             </RelativeLayout>
         </LinearLayout>
     </ScrollView>
