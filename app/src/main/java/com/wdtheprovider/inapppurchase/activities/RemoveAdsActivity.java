@@ -1,4 +1,10 @@
-package com.wdtheprovider.sharcourse.activities;
+package com.wdtheprovider.inapppurchase.activities;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -7,13 +13,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.Toast;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.billingclient.api.AcknowledgePurchaseParams;
 import com.android.billingclient.api.BillingClient;
@@ -26,16 +25,17 @@ import com.android.billingclient.api.QueryProductDetailsParams;
 import com.android.billingclient.api.QueryPurchasesParams;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.collect.ImmutableList;
-import com.wdtheprovider.sharcourse.R;
-import com.wdtheprovider.sharcourse.adapters.SubscriptionAdapter;
-import com.wdtheprovider.sharcourse.interfaces.RecycleViewInterface;
-import com.wdtheprovider.sharcourse.utilies.Prefs;
+import com.google.common.collect.ImmutableList;
+import com.wdtheprovider.inapppurchase.R;
+import com.wdtheprovider.inapppurchase.adapters.RemoveAdsAdapter;
+import com.wdtheprovider.inapppurchase.interfaces.RecycleViewInterface;
+import com.wdtheprovider.inapppurchase.utilies.Prefs;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Subscriptions extends AppCompatActivity implements RecycleViewInterface {
+public class RemoveAdsActivity extends AppCompatActivity implements RecycleViewInterface {
+
     Activity activity;
     Prefs prefs;
     private BillingClient billingClient;
@@ -45,26 +45,23 @@ public class Subscriptions extends AppCompatActivity implements RecycleViewInter
     Toolbar toolbar;
     Handler handler;
     ExtendedFloatingActionButton btn_restore_fab;
-    SubscriptionAdapter adapter;
+    RemoveAdsAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_subscriptions);
+        setContentView(R.layout.activity_remove_ads);
 
         initViews();
-        handler = new Handler();
 
-        activity = this;
-        prefs = new Prefs(this);
-
+        //Initialize a BillingClient with PurchasesUpdatedListener onCreate method
         billingClient = BillingClient.newBuilder(this)
                 .enablePendingPurchases()
                 .setListener(
                         (billingResult, list) -> {
-                            if(billingResult.getResponseCode()==BillingClient.BillingResponseCode.OK && list !=null) {
-                                for (Purchase purchase: list){
-                                    verifySubPurchase(purchase);
+                            if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK && list != null) {
+                                for (Purchase purchase : list) {
+                                    handlePurchase(purchase);
                                 }
                             }
                         }
@@ -75,12 +72,12 @@ public class Subscriptions extends AppCompatActivity implements RecycleViewInter
 
         //restore purchases
         btn_restore_fab.setOnClickListener(v -> {
-            restorePurchases();
+           restorePurchases();
         });
-
     }
 
     void establishConnection() {
+
         billingClient.startConnection(new BillingClientStateListener() {
             @Override
             public void onBillingSetupFinished(@NonNull BillingResult billingResult) {
@@ -100,28 +97,13 @@ public class Subscriptions extends AppCompatActivity implements RecycleViewInter
     }
 
     @SuppressLint("SetTextI18n")
-
     void showProducts() {
-
         ImmutableList<QueryProductDetailsParams.Product> productList = ImmutableList.of(
                 //Product 1
                 QueryProductDetailsParams.Product.newBuilder()
-                        .setProductId("one_week")
-                        .setProductType(BillingClient.ProductType.SUBS)
-                        .build() ,
-
-                //Product 2
-                QueryProductDetailsParams.Product.newBuilder()
-                        .setProductId("one_month")
-                        .setProductType(BillingClient.ProductType.SUBS)
-                        .build(),
-
-                //Product 3
-                QueryProductDetailsParams.Product.newBuilder()
-                        .setProductId("one_year")
-                        .setProductType(BillingClient.ProductType.SUBS)
+                        .setProductId("test_remove_ads1")
+                        .setProductType(BillingClient.ProductType.INAPP)
                         .build()
-
         );
 
         QueryProductDetailsParams params = QueryProductDetailsParams.newBuilder()
@@ -136,11 +118,11 @@ public class Subscriptions extends AppCompatActivity implements RecycleViewInter
                     handler.postDelayed(() -> {
                         loadProducts.setVisibility(View.INVISIBLE);
                         productDetailsList.addAll(prodDetailsList);
-                        adapter = new SubscriptionAdapter(getApplicationContext(), productDetailsList, Subscriptions.this);
+                        adapter = new RemoveAdsAdapter(getApplicationContext(), productDetailsList, RemoveAdsActivity.this);
                         recyclerView.setHasFixedSize(true);
-                        recyclerView.setLayoutManager(new LinearLayoutManager(Subscriptions.this, LinearLayoutManager.VERTICAL, false));
+                        recyclerView.setLayoutManager(new LinearLayoutManager(RemoveAdsActivity.this, LinearLayoutManager.VERTICAL, false));
                         recyclerView.setAdapter(adapter);
-                    },2000);
+                    }, 2000);
 
                 }
         );
@@ -148,12 +130,10 @@ public class Subscriptions extends AppCompatActivity implements RecycleViewInter
     }
 
     void launchPurchaseFlow(ProductDetails productDetails) {
-        assert productDetails.getSubscriptionOfferDetails() != null;
         ImmutableList<BillingFlowParams.ProductDetailsParams> productDetailsParamsList =
                 ImmutableList.of(
                         BillingFlowParams.ProductDetailsParams.newBuilder()
                                 .setProductDetails(productDetails)
-                                .setOfferToken(productDetails.getSubscriptionOfferDetails().get(0).getOfferToken())
                                 .build()
                 );
         BillingFlowParams billingFlowParams = BillingFlowParams.newBuilder()
@@ -163,15 +143,35 @@ public class Subscriptions extends AppCompatActivity implements RecycleViewInter
         billingClient.launchBillingFlow(activity, billingFlowParams);
     }
 
+
+
+    void handlePurchase(Purchase purchases) {
+        if(!purchases.isAcknowledged()){
+            billingClient.acknowledgePurchase(AcknowledgePurchaseParams
+                    .newBuilder()
+                    .setPurchaseToken(purchases.getPurchaseToken())
+                    .build(), billingResult -> {
+
+                if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
+                    //Setting setIsRemoveAd to true
+                    // true - No ads
+                    // false - showing ads.
+                    prefs.setIsRemoveAd(true);
+                    //  goBack();
+                }
+            });
+        }
+    }
+
     protected void onResume() {
         super.onResume();
         billingClient.queryPurchasesAsync(
-                QueryPurchasesParams.newBuilder().setProductType(BillingClient.ProductType.SUBS).build(),
+                QueryPurchasesParams.newBuilder().setProductType(BillingClient.ProductType.INAPP).build(),
                 (billingResult, list) -> {
                     if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
                         for (Purchase purchase : list) {
                             if (purchase.getPurchaseState() == Purchase.PurchaseState.PURCHASED && !purchase.isAcknowledged()) {
-                                verifySubPurchase(purchase);
+                                handlePurchase(purchase);
                             }
                         }
                     }
@@ -180,39 +180,47 @@ public class Subscriptions extends AppCompatActivity implements RecycleViewInter
     }
 
 
-    void verifySubPurchase(Purchase purchases) {
+    void restorePurchases() {
+        billingClient = BillingClient.newBuilder(this).enablePendingPurchases().setListener((billingResult, list) -> {
+        }).build();
+        final BillingClient finalBillingClient = billingClient;
+        billingClient.startConnection(new BillingClientStateListener() {
+            @Override
+            public void onBillingServiceDisconnected() {
+                establishConnection();
+            }
 
-        AcknowledgePurchaseParams acknowledgePurchaseParams = AcknowledgePurchaseParams
-                .newBuilder()
-                .setPurchaseToken(purchases.getPurchaseToken())
-                .build();
-
-        billingClient.acknowledgePurchase(acknowledgePurchaseParams, billingResult -> {
-            if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
-                //user prefs to set premium
-                Toast.makeText(Subscriptions.this, "Subscription activated, Enjoy!", Toast.LENGTH_SHORT).show();
-                //Setting premium to 1
-                // 1 - premium
-                // 0 - no premium
-                prefs.setPremium(1);
-                startActivity(new Intent(this,MainActivity.class));
-                finish();            }
+            @Override
+            public void onBillingSetupFinished(@NonNull BillingResult billingResult) {
+                if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
+                    finalBillingClient.queryPurchasesAsync(
+                            QueryPurchasesParams.newBuilder().setProductType(BillingClient.ProductType.INAPP).build(), (billingResult1, list) -> {
+                                if (billingResult1.getResponseCode() == BillingClient.BillingResponseCode.OK) {
+                                    if (list.size() > 0) {
+                                        prefs.setIsRemoveAd(true); // set true to activate remove ad feature
+                                        showSnackbar(btn_restore_fab, "Successfully restored");
+                                    } else {
+                                        showSnackbar(btn_restore_fab, "Oops, No purchase found.");
+                                        prefs.setIsRemoveAd(false); // set false to de-activate remove ad feature
+                                    }
+                                }
+                            });
+                }
+            }
         });
     }
 
     private void initViews() {
-        toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+
+        activity = this;
+        handler = new Handler();
+        prefs = new Prefs(this);
         productDetailsList = new ArrayList<>();
+        toolbar = findViewById(R.id.toolbar);
         recyclerView = findViewById(R.id.recyclerview);
         btn_restore_fab = findViewById(R.id.fab);
         loadProducts = findViewById(R.id.loadProducts);
 
-    }
-
-    @Override
-    public void onItemClick(int pos) {
-launchPurchaseFlow(productDetailsList.get(pos));
     }
 
     @Override
@@ -222,40 +230,12 @@ launchPurchaseFlow(productDetailsList.get(pos));
         finish();
     }
 
-
-    void restorePurchases(){
-
-        billingClient = BillingClient.newBuilder(this).enablePendingPurchases().setListener((billingResult, list) -> {}).build();
-        final BillingClient finalBillingClient = billingClient;
-        billingClient.startConnection(new BillingClientStateListener() {
-            @Override
-            public void onBillingServiceDisconnected() {
-
-            }
-
-            @Override
-            public void onBillingSetupFinished(@NonNull BillingResult billingResult) {
-
-                if(billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK){
-                    finalBillingClient.queryPurchasesAsync(
-                            QueryPurchasesParams.newBuilder().setProductType(BillingClient.ProductType.SUBS).build(), (billingResult1, list) -> {
-                                if (billingResult1.getResponseCode() == BillingClient.BillingResponseCode.OK){
-                                    if(list.size()>0){
-                                        prefs.setPremium(1); // set 1 to activate premium feature
-                                        showSnackBar(btn_restore_fab, "Successfully restored");
-                                    }else {
-                                        showSnackBar(btn_restore_fab, "Oops, No purchase found.");
-                                        prefs.setPremium(0); // set 0 to de-activate premium feature
-                                    }
-                                }
-                            });
-                }
-            }
-        });
+    public void showSnackbar(View view, String message) {
+        Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show();
     }
 
-    public void showSnackBar(View view, String message)
-    {
-        Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show();
+    @Override
+    public void onItemClick(int pos) {
+        launchPurchaseFlow(productDetailsList.get(pos));
     }
 }

@@ -1,4 +1,4 @@
-package com.wdtheprovider.sharcourse.activities;
+package com.wdtheprovider.inapppurchase.activities;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -28,10 +28,10 @@ import com.android.billingclient.api.QueryProductDetailsParams;
 import com.android.billingclient.api.QueryPurchasesParams;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.collect.ImmutableList;
-import com.wdtheprovider.sharcourse.R;
-import com.wdtheprovider.sharcourse.adapters.BuyCoinsAdapter;
-import com.wdtheprovider.sharcourse.interfaces.RecycleViewInterface;
-import com.wdtheprovider.sharcourse.utilies.Prefs;
+import com.wdtheprovider.inapppurchase.adapters.BuyCoinsAdapter;
+import com.wdtheprovider.inapppurchase.interfaces.RecycleViewInterface;
+import com.wdtheprovider.inapppurchase.utilies.Prefs;
+import com.wdtheprovider.inapppurchase.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -111,19 +111,19 @@ public class BuyCoinActivity extends AppCompatActivity implements RecycleViewInt
         ImmutableList<QueryProductDetailsParams.Product> productList = ImmutableList.of(
                 //Product 1
                 QueryProductDetailsParams.Product.newBuilder()
-                        .setProductId("10_coins_id")
+                        .setProductId("test_coins_111")
                         .setProductType(BillingClient.ProductType.INAPP)
                         .build(),
 
                 //Product 2
                 QueryProductDetailsParams.Product.newBuilder()
-                        .setProductId("20_coins_id")
+                        .setProductId("test_coins_201")
                         .setProductType(BillingClient.ProductType.INAPP)
                         .build(),
 
                 //Product 3
                 QueryProductDetailsParams.Product.newBuilder()
-                        .setProductId("50_coins_id")
+                        .setProductId("test_coins_30")
                         .setProductType(BillingClient.ProductType.INAPP)
                         .build()
         );
@@ -193,12 +193,12 @@ public class BuyCoinActivity extends AppCompatActivity implements RecycleViewInt
 
         productIds = new ArrayList<>();
         coins = new ArrayList<>();
-        productIds.add("10_coins_id");
+        productIds.add("test_coins_11");
         coins.add(10);
-        productIds.add("20_coins_id");
+        productIds.add("test_coins_20");
         coins.add(20);
-        productIds.add("50_coins_id");
-        coins.add(50);
+        productIds.add("test_coins_30");
+        coins.add(30);
 
     }
 

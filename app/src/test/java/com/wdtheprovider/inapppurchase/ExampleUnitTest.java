@@ -1,4 +1,4 @@
-package com.wdtheprovider.sharcourse;
+package com.wdtheprovider.inapppurchase;
 
 import org.junit.Test;
 

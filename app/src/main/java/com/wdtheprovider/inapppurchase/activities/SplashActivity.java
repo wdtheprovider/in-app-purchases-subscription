@@ -1,4 +1,4 @@
-package com.wdtheprovider.sharcourse.activities;
+package com.wdtheprovider.inapppurchase.activities;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -15,8 +15,8 @@ import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingClientStateListener;
 import com.android.billingclient.api.BillingResult;
 import com.android.billingclient.api.QueryPurchasesParams;
-import com.wdtheprovider.sharcourse.R;
-import com.wdtheprovider.sharcourse.utilies.Prefs;
+import com.wdtheprovider.inapppurchase.R;
+import com.wdtheprovider.inapppurchase.utilies.Prefs;
 
 @SuppressLint("CustomSplashScreen")
 public class SplashActivity extends AppCompatActivity {

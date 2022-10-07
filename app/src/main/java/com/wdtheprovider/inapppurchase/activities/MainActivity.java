@@ -1,4 +1,4 @@
-package com.wdtheprovider.sharcourse.activities;
+package com.wdtheprovider.inapppurchase.activities;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -14,13 +14,13 @@ import androidx.appcompat.widget.Toolbar;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
-import com.wdtheprovider.sharcourse.R;
-import com.wdtheprovider.sharcourse.utilies.Prefs;
+import com.wdtheprovider.inapppurchase.utilies.Prefs;
+import com.wdtheprovider.inapppurchase.R;
 
-public class MainActivity extends AppCompatActivity  {
-    Button btn_subscribe,btn_buy_coins,btn_remove_ads;
+public class MainActivity extends AppCompatActivity {
+    Button btn_subscribe, btn_buy_coins, btn_remove_ads;
     Prefs prefs;
-    TextView txt_subscribed,coins,onOff,about,privacy;
+    TextView txt_subscribed, coins, onOff, about, privacy;
     Toolbar toolbar;
 
     @SuppressLint("SetTextI18n")
@@ -31,45 +31,64 @@ public class MainActivity extends AppCompatActivity  {
 
         initViews();
 
-        if (prefs.getPremium()==1){
+        if (prefs.getPremium() == 1) {
             txt_subscribed.setText("You are a Premium Subscriber");
         } else {
             txt_subscribed.setText("You are not Subscribed");
         }
 
-        if(prefs.isRemoveAd()){
+        if (prefs.isRemoveAd()) {
             onOff.setText("ON");
-        }else {
-            onOff.setText("OFF");
+        } else {
+            if (prefs.getPremium() == 0) {
+                onOff.setText("OFF");
+            } else {
+                onOff.setText("ON");
+            }
         }
 
-        coins.setText(prefs.getInt("coins",0)+" Remaining coins");
+        coins.setText(prefs.getInt("coins", 0) + " Remaining coins");
 
         //Opening activities.
-        btn_subscribe.setOnClickListener(view -> startActivity(new Intent(this, Subscriptions.class)));
-        btn_buy_coins.setOnClickListener(view -> startActivity(new Intent(this, BuyCoinActivity.class)));
-        btn_remove_ads.setOnClickListener(view -> startActivity(new Intent(this, RemoveAdsActivity.class)));
+        btn_subscribe.setOnClickListener(view -> {
+            startActivity(new Intent(this, Subscriptions.class));
+            finish();
+        });
+
+        btn_buy_coins.setOnClickListener(view -> {
+            startActivity(new Intent(this, BuyCoinActivity.class));
+            finish();
+        });
+
+        btn_remove_ads.setOnClickListener(view -> {
+            startActivity(new Intent(this, RemoveAdsActivity.class));
+            finish();
+        });
+
     }
 
     private void initViews() {
         prefs = new Prefs(this);
-        btn_subscribe= findViewById(R.id.btn_subscribe);
+        btn_subscribe = findViewById(R.id.btn_subscribe);
         toolbar = findViewById(R.id.toolbar);
-        txt_subscribed= findViewById(R.id.txt_subscribed);
-        btn_buy_coins= findViewById(R.id.btn_buy_coins);
-        btn_remove_ads= findViewById(R.id.btn_remove_ads);
-        onOff= findViewById(R.id.OnOff);
-        coins= findViewById(R.id.coins);
-        about= findViewById(R.id.about);
-        privacy= findViewById(R.id.privacy);
+        txt_subscribed = findViewById(R.id.txt_subscribed);
+        btn_buy_coins = findViewById(R.id.btn_buy_coins);
+        btn_remove_ads = findViewById(R.id.btn_remove_ads);
+        onOff = findViewById(R.id.OnOff);
+        coins = findViewById(R.id.coins);
+        about = findViewById(R.id.about);
+        privacy = findViewById(R.id.privacy);
 
         setSupportActionBar(toolbar);
 
-        //This will check if remove ad is true, then not display ads.
-        if (!prefs.isRemoveAd() || prefs.getPremium()==0) {
-            MobileAds.initialize(this, initializationStatus -> {
-            });
-            loadBannerAd();
+        //Checks if the user has a premium/subscription if not then show ads.
+        if (prefs.getPremium() == 0) {
+            //This will check if remove ad is true, then not display ads.
+            if (!prefs.isRemoveAd()) {
+                MobileAds.initialize(this, initializationStatus -> {
+                });
+                loadBannerAd();
+            }
         }
 
         about.setOnClickListener(v -> {
@@ -92,7 +111,7 @@ public class MainActivity extends AppCompatActivity  {
         });
     }
 
-    void loadBannerAd(){
+    void loadBannerAd() {
         AdView mAdView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);

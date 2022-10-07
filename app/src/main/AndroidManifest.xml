@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.wdtheprovider.sharcourse">
+    package="com.wdtheprovider.inapppurchase">
 
     <uses-permission android:name="com.android.vending.BILLING" />
 
@@ -12,19 +12,19 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Sharcourse">
         <activity
-            android:name=".activities.RemoveAdsActivity"
+            android:name="com.wdtheprovider.inapppurchase.activities.RemoveAdsActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.BuyCoinActivity"
+            android:name="com.wdtheprovider.inapppurchase.activities.BuyCoinActivity"
             android:exported="true" />
         <activity
-            android:name=".activities.Subscriptions"
+            android:name="com.wdtheprovider.inapppurchase.activities.Subscriptions"
             android:exported="true" />
         <activity
-            android:name=".activities.MainActivity"
+            android:name="com.wdtheprovider.inapppurchase.activities.MainActivity"
             android:exported="true" />
         <activity
-            android:name=".activities.SplashActivity"
+            android:name="com.wdtheprovider.inapppurchase.activities.SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
