@@ -6,6 +6,8 @@ In this repository i'm going to show you how to integrate In-App Purchases of Go
  docs, i'm not using any third-party library
 
 Demo <br>
+Demo available on Play Store : https://play.google.com/store/apps/details?id=com.wdtheprovider.inapppurchase
+<br>
 
 <span> <img src="https://github.com/wdtheprovider/in-app-purchases-subscription/blob/master/app/src/main/res/drawable/splash.jpg" width="270" height="550">
  <span> <img src="https://github.com/wdtheprovider/in-app-purchases-subscription/blob/master/app/src/main/res/drawable/p1.jpg" width="270" height="550">
