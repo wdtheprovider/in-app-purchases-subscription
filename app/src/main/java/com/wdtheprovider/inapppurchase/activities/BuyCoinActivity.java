@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -161,6 +162,7 @@ public class BuyCoinActivity extends AppCompatActivity implements RecycleViewInt
     }
 
     void verifyPurchase(Purchase purchase) {
+        Log.d("testCoins","Verify Purchase " + purchase.toString());
         ConsumeParams consumeParams = ConsumeParams.newBuilder()
                 .setPurchaseToken(purchase.getPurchaseToken())
                 .build();
@@ -169,8 +171,10 @@ public class BuyCoinActivity extends AppCompatActivity implements RecycleViewInt
                 giveUserCoins(purchase);
             }
         };
+
         billingClient.consumeAsync(consumeParams, listener);
     }
+
 
     @SuppressLint("SetTextI18n")
     private void initViews() {
@@ -193,13 +197,12 @@ public class BuyCoinActivity extends AppCompatActivity implements RecycleViewInt
 
         productIds = new ArrayList<>();
         coins = new ArrayList<>();
-        productIds.add("test_coins_11");
+        productIds.add("test_coins_111");
         coins.add(10);
-        productIds.add("test_coins_20");
+        productIds.add("test_coins_201");
         coins.add(20);
         productIds.add("test_coins_30");
         coins.add(30);
-
     }
 
     @SuppressLint("SetTextI18n")
@@ -207,7 +210,15 @@ public class BuyCoinActivity extends AppCompatActivity implements RecycleViewInt
         for(int i=0;i<productIds.size();i++){
             if(purchase.getProducts().get(0).equals(productIds.get(i))){
                 //set coins
-                prefs.setInt("coins",coins.get(i) * purchase.getQuantity() + prefs.getInt("coins",0));
+                int boughtCoins = coins.get(i) * purchase.getQuantity();
+                int myCoins = prefs.getInt("coins",0);
+                int finalCoins = myCoins + boughtCoins;
+
+                Log.d("testCoins","bought Coins: " + boughtCoins);
+                Log.d("testCoins","My Coins: " + myCoins);
+                Log.d("testCoins","Final Coins: " + finalCoins);
+
+                prefs.setInt("coins", finalCoins);
                 //Update UI
                 txt_coins.setText(prefs.getInt("coins",0)+" Coin(s)");
             }
