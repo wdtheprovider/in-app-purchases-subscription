@@ -46,6 +46,17 @@ public class Subscriptions extends AppCompatActivity implements RecycleViewInter
     Handler handler;
     ExtendedFloatingActionButton btn_restore_fab;
     SubscriptionAdapter adapter;
+    boolean bought = false;
+
+    private void initViews() {
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        productDetailsList = new ArrayList<>();
+        recyclerView = findViewById(R.id.recyclerview);
+        btn_restore_fab = findViewById(R.id.fab);
+        loadProducts = findViewById(R.id.loadProducts);
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,7 +111,6 @@ public class Subscriptions extends AppCompatActivity implements RecycleViewInter
     }
 
     @SuppressLint("SetTextI18n")
-
     void showProducts() {
 
         ImmutableList<QueryProductDetailsParams.Product> productList = ImmutableList.of(
@@ -157,6 +167,34 @@ public class Subscriptions extends AppCompatActivity implements RecycleViewInter
         billingClient.launchBillingFlow(activity, billingFlowParams);
     }
 
+    void verifySubPurchase(Purchase purchases) {
+
+        AcknowledgePurchaseParams acknowledgePurchaseParams = AcknowledgePurchaseParams
+                .newBuilder()
+                .setPurchaseToken(purchases.getPurchaseToken())
+                .build();
+
+        billingClient.acknowledgePurchase(acknowledgePurchaseParams, billingResult -> {
+            if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
+                //use prefs to set premium
+              //  Toast.makeText(Subscriptions.this, "Subscription activated, Enjoy!", Toast.LENGTH_SHORT).show();
+                //Setting premium to 1
+                // 1 - premium
+                // 0 - no premium
+                prefs.setPremium(1);
+                goBack();
+            }
+        });
+    }
+
+    private void goBack() {
+        handler.postDelayed(() -> {
+            startActivity(new Intent(getApplicationContext(),MainActivity.class));
+            finish();
+        },2000);
+
+    }
+
     protected void onResume() {
         super.onResume();
         billingClient.queryPurchasesAsync(
@@ -173,49 +211,10 @@ public class Subscriptions extends AppCompatActivity implements RecycleViewInter
         );
     }
 
-
-    void verifySubPurchase(Purchase purchases) {
-
-        AcknowledgePurchaseParams acknowledgePurchaseParams = AcknowledgePurchaseParams
-                .newBuilder()
-                .setPurchaseToken(purchases.getPurchaseToken())
-                .build();
-
-        billingClient.acknowledgePurchase(acknowledgePurchaseParams, billingResult -> {
-            if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
-                //user prefs to set premium
-                Toast.makeText(Subscriptions.this, "Subscription activated, Enjoy!", Toast.LENGTH_SHORT).show();
-                //Setting premium to 1
-                // 1 - premium
-                // 0 - no premium
-                prefs.setPremium(1);
-                startActivity(new Intent(this,MainActivity.class));
-                finish();            }
-        });
-    }
-
-    private void initViews() {
-        toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        productDetailsList = new ArrayList<>();
-        recyclerView = findViewById(R.id.recyclerview);
-        btn_restore_fab = findViewById(R.id.fab);
-        loadProducts = findViewById(R.id.loadProducts);
-
-    }
-
     @Override
     public void onItemClick(int pos) {
-launchPurchaseFlow(productDetailsList.get(pos));
+        launchPurchaseFlow(productDetailsList.get(pos));
     }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        startActivity(new Intent(activity,MainActivity.class));
-        finish();
-    }
-
 
     void restorePurchases(){
 
@@ -224,7 +223,6 @@ launchPurchaseFlow(productDetailsList.get(pos));
         billingClient.startConnection(new BillingClientStateListener() {
             @Override
             public void onBillingServiceDisconnected() {
-
             }
 
             @Override
@@ -237,6 +235,7 @@ launchPurchaseFlow(productDetailsList.get(pos));
                                     if(list.size()>0){
                                         prefs.setPremium(1); // set 1 to activate premium feature
                                         showSnackBar(btn_restore_fab, "Successfully restored");
+                                        goBack();
                                     }else {
                                         showSnackBar(btn_restore_fab, "Oops, No purchase found.");
                                         prefs.setPremium(0); // set 0 to de-activate premium feature
@@ -251,5 +250,12 @@ launchPurchaseFlow(productDetailsList.get(pos));
     public void showSnackBar(View view, String message)
     {
         Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        startActivity(new Intent(activity,MainActivity.class));
+        finish();
     }
 }
