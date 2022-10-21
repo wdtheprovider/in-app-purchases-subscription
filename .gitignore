@@ -13,3 +13,8 @@
 .externalNativeBuild
 .cxx
 local.properties
+/app/src/main/java/com/wdtheprovider/inapppurchase/adapters/RemoveAdsAdapter.java
+/app/src/main/java/com/wdtheprovider/inapppurchase/adapters/BuyCodeAdapter.java
+/app/src/main/java/com/wdtheprovider/inapppurchase/adapters/BuyCoinsAdapter.java
+/app/src/main/java/com/wdtheprovider/inapppurchase/adapters/SubscriptionAdapter.java
+/app/src/main/java/com/wdtheprovider/inapppurchase/activities/BuyCodeActivity.java
