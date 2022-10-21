@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/screen_bg_dark"
-    tools:context=".activities.Subscriptions">
+    tools:context=".activities.BuyCodeActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -20,7 +20,7 @@
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:foregroundTint="@color/orange"
+        android:foregroundTint="@color/purple_500"
         app:backgroundTint="@color/white"
         android:backgroundTint="@color/orange"
         android:layout_alignParentEnd="true"
@@ -42,14 +42,16 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <ImageView
+            <TextView
                 android:id="@+id/imgview"
-                android:layout_width="150dp"
-                android:layout_height="150dp"
+                android:layout_width="wrap_content"
+                android:textSize="20sp"
+                android:text="Complete source Code"
+                android:layout_marginTop="20dp"
+                android:textColor="@color/white"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_margin="20dp"
-                android:src="@drawable/ic_sub"
-                android:visibility="invisible" />
+                android:layout_margin="20dp"/>
 
             <RelativeLayout
                 android:id="@+id/cc"
@@ -59,15 +61,6 @@
                 android:padding="10dp">
 
                 <LinearLayout
-                    android:id="@+id/allFeatures"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                </LinearLayout>
-
-                <LinearLayout
                     android:id="@+id/RemoveAds"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -75,30 +68,36 @@
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
-                    <ImageView
-                        android:layout_width="34dp"
-                        android:layout_height="34dp"
-                        android:src="@drawable/ic_baseline_check_circle_outline_24" />
-
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
-                        android:text="@string/remove_ads"
+                        android:text="@string/about_code"
                         android:textColor="@color/white"
-                        android:textSize="20sp"
+                        android:textSize="14sp"
                         android:textStyle="bold" />
 
                 </LinearLayout>
+
+                <Button
+                    android:id="@+id/btn_dwn_source_code"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/RemoveAds"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:text="Download Source Code"
+                    android:textColor="@color/white" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerview"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_below="@id/RemoveAds"
+                    android:layout_below="@id/btn_dwn_source_code"
                     android:layout_marginTop="10dp"
                     android:visibility="visible" />
-
 
                 <ProgressBar
                     android:id="@+id/loadProducts"
@@ -109,18 +108,6 @@
                     android:layout_marginTop="100dp"
                     android:visibility="visible" />
             </RelativeLayout>
-
-
-            <TextView
-
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:gravity="center"
-                android:text="@string/subscription_terms"
-                android:textColor="@color/white"
-                android:textStyle="bold" />
-
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>

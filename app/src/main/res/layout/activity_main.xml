@@ -17,13 +17,40 @@
             android:layout_width="match_parent"
             android:layout_height="?actionBarSize"/>
 
+    <LinearLayout
+        android:id="@+id/container_3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/toolbar"
+        android:orientation="horizontal"
+        android:padding="10dp"
+        android:weightSum="2">
+
+        <TextView
+            android:id="@+id/about"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="20dp"
+            android:text="About"
+            android:textColor="@color/white" />
+
+        <TextView
+            android:id="@+id/privacy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="20dp"
+            android:text="Privacy Policy"
+            android:textColor="@color/white" />
+    </LinearLayout>
+
+
     <TextView
         android:id="@+id/txt_subscribed"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/toolbar"
+        android:layout_below="@id/container_3"
         android:layout_centerInParent="true"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="20dp"
         android:text="@string/not_subscribed"
         android:textAllCaps="true"
         android:textColor="@color/white"
@@ -109,43 +136,43 @@
         </LinearLayout>
     </LinearLayout>
 
-
-    <LinearLayout
-        android:id="@+id/container_3"
+    <Button
+        android:id="@+id/btn_buy_source_code"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/container_2"
-        android:orientation="vertical"
-        android:padding="10dp"
-        android:weightSum="2">
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:text="@string/buy_source_code"
+        android:textColor="@color/white" />
 
-        <TextView
-            android:padding="20dp"
-            android:id="@+id/about"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="About"
-            android:textColor="@color/white" />
-        <TextView
-            android:padding="20dp"
-            android:id="@+id/privacy"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Privacy Policy"
-            android:textColor="@color/white" />
-    </LinearLayout>
-
+    <Button
+        android:id="@+id/btn_show_interstitial"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btn_buy_source_code"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:text="Show interstitial Ad"
+        android:textColor="@color/white" />
 
     <com.google.android.gms.ads.AdView
-            xmlns:ads="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/adView"
-            android:layout_margin="1dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_alignParentBottom="true"
-            ads:adSize="SMART_BANNER"
-            ads:adUnitId="ca-app-pub-3940256099942544/6300978111">
-        </com.google.android.gms.ads.AdView>
+        android:id="@+id/adView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="1dp"
+        android:layout_marginEnd="1dp"
+        android:layout_marginBottom="1dp"
+        app:adSize="SMART_BANNER"
+        app:adUnitId="ca-app-pub-3940256099942544/6300978111" />
+
+
+
 
 </RelativeLayout>

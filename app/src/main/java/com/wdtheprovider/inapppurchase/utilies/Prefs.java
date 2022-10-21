@@ -58,8 +58,17 @@ public class Prefs {
         return  getBoolean("isRemoveAd", false);
     }
 
+    public boolean canDownload(){
+        return  getBoolean("canDownload", false);
+    }
+
     public void setIsRemoveAd(boolean value){
         editor.putBoolean("isRemoveAd",value);
+        editor.apply();
+    }
+
+    public void setCanDownload(boolean value){
+        editor.putBoolean("canDownload",value);
         editor.apply();
     }
 

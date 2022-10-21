@@ -4,24 +4,38 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
 import com.wdtheprovider.inapppurchase.utilies.Prefs;
 import com.wdtheprovider.inapppurchase.R;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 
 public class MainActivity extends AppCompatActivity {
-    Button btn_subscribe, btn_buy_coins, btn_remove_ads;
+    Button btn_subscribe, btn_buy_coins, btn_remove_ads,btn_buy_source_code,btn_show_interstitial;
     Prefs prefs;
     TextView txt_subscribed, coins, onOff, about, privacy;
     Toolbar toolbar;
+    AdView mAdView;
+    String TAG = "test";
+
+    private InterstitialAd mInterstitialAd;
+    AdRequest adRequest;
+
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -40,11 +54,7 @@ public class MainActivity extends AppCompatActivity {
         if (prefs.isRemoveAd()) {
             onOff.setText("ON");
         } else {
-            if (prefs.getPremium() == 0) {
-                onOff.setText("OFF");
-            } else {
-                onOff.setText("ON");
-            }
+            onOff.setText("OFF");
         }
 
         coins.setText(prefs.getInt("coins", 0) + " Remaining coins");
@@ -65,6 +75,11 @@ public class MainActivity extends AppCompatActivity {
             finish();
         });
 
+        btn_buy_source_code.setOnClickListener(view -> {
+            startActivity(new Intent(this, BuyCodeActivity.class));
+            finish();
+        });
+
     }
 
     private void initViews() {
@@ -74,21 +89,29 @@ public class MainActivity extends AppCompatActivity {
         txt_subscribed = findViewById(R.id.txt_subscribed);
         btn_buy_coins = findViewById(R.id.btn_buy_coins);
         btn_remove_ads = findViewById(R.id.btn_remove_ads);
+        btn_buy_source_code = findViewById(R.id.btn_buy_source_code);
         onOff = findViewById(R.id.OnOff);
         coins = findViewById(R.id.coins);
         about = findViewById(R.id.about);
         privacy = findViewById(R.id.privacy);
+        mAdView    = findViewById(R.id.adView);
+        btn_show_interstitial    = findViewById(R.id.btn_show_interstitial);
 
         setSupportActionBar(toolbar);
 
         //Checks if the user has a premium/subscription if not then show ads.
         if (prefs.getPremium() == 0) {
-            //This will check if remove ad is true, then not display ads.
-            if (!prefs.isRemoveAd()) {
-                MobileAds.initialize(this, initializationStatus -> {
-                });
-                loadBannerAd();
-            }
+            Log.d("Test23","GetPremium "+prefs.getPremium());
+
+            MobileAds.initialize(this, initializationStatus -> {
+            });
+            adRequest = new AdRequest.Builder().build();
+            loadBannerAd();
+            loadInterstitialAd();
+
+        } else {
+            Log.d("Test23","GetPremium "+prefs.getPremium());
+            mAdView.setVisibility(View.GONE);
         }
 
         about.setOnClickListener(v -> {
@@ -109,11 +132,39 @@ public class MainActivity extends AppCompatActivity {
             i.setData(Uri.parse(url));
             startActivity(i);
         });
+
+        btn_show_interstitial.setOnClickListener(v -> {
+            if (prefs.getPremium() == 0) {
+                if (mInterstitialAd != null) {
+                    mInterstitialAd.show(this);
+                } else {
+                    Log.d("TAG", "The interstitial ad wasn't ready yet.");
+                }
+                loadInterstitialAd();
+            }
+        });
     }
 
     void loadBannerAd() {
-        AdView mAdView = findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
+    }
+
+    void loadInterstitialAd() {
+        InterstitialAd.load(this,"ca-app-pub-3940256099942544/1033173712", adRequest,
+                new InterstitialAdLoadCallback() {
+                    @Override
+                    public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                        // The mInterstitialAd reference will be null until
+                        // an ad is loaded.
+                        mInterstitialAd = interstitialAd;
+                        Log.i("test", "onAdLoaded");
+                    }
+                    @Override
+                    public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                        // Handle the error
+                        Log.d("test", loadAdError.toString());
+                        mInterstitialAd = null;
+                    }
+                });
     }
 }
