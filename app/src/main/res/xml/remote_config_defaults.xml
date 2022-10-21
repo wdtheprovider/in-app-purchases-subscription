@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- START xml_defaults -->
+<defaultsMap>
+    <entry>
+        <key>download_url</key>
+        <value>https://dingi.icu/Download/private/SourceCode.zip</value>
+    </entry>
+</defaultsMap>
+    <!-- END xml_defaults -->

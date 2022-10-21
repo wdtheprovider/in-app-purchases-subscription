@@ -136,10 +136,18 @@
         </LinearLayout>
     </LinearLayout>
 
+    <ProgressBar
+        android:layout_below="@id/container_2"
+        android:id="@+id/progress_circular"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
     <Button
         android:id="@+id/btn_buy_source_code"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:visibility="invisible"
         android:layout_below="@id/container_2"
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"

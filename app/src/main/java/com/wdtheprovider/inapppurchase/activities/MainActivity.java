@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -14,25 +15,27 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.FullScreenContentCallback;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
-import com.wdtheprovider.inapppurchase.utilies.Prefs;
-import com.wdtheprovider.inapppurchase.R;
 import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
+import com.onesignal.OneSignal;
+import com.wdtheprovider.inapppurchase.R;
+import com.wdtheprovider.inapppurchase.utilies.Prefs;
 
 public class MainActivity extends AppCompatActivity {
     Button btn_subscribe, btn_buy_coins, btn_remove_ads,btn_buy_source_code,btn_show_interstitial;
     Prefs prefs;
     TextView txt_subscribed, coins, onOff, about, privacy;
     Toolbar toolbar;
+    ProgressBar progress_circular;
     AdView mAdView;
     String TAG = "test";
-
+    private static final String ONESIGNAL_APP_ID = "ffae7918-4da1-49b4-bf0c-4aea56da3d6a";
     private InterstitialAd mInterstitialAd;
     AdRequest adRequest;
 
@@ -42,6 +45,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Enable verbose OneSignal logging to debug issues if needed.
+        OneSignal.setLogLevel(OneSignal.LOG_LEVEL.VERBOSE, OneSignal.LOG_LEVEL.NONE);
+
+        // OneSignal Initialization
+        OneSignal.initWithContext(this);
+        OneSignal.setAppId(ONESIGNAL_APP_ID);
+
+        OneSignal.promptForPushNotifications();
 
         initViews();
 
@@ -80,6 +92,33 @@ public class MainActivity extends AppCompatActivity {
             finish();
         });
 
+        initRemoteConfig();
+
+    }
+
+    void initRemoteConfig(){
+
+        FirebaseRemoteConfig mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
+        FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
+                .setMinimumFetchIntervalInSeconds(60)
+                .build();
+
+        mFirebaseRemoteConfig.setConfigSettingsAsync(configSettings);
+
+        mFirebaseRemoteConfig.setDefaultsAsync(R.xml.remote_config_defaults);
+
+        mFirebaseRemoteConfig.fetchAndActivate()
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        boolean updated = task.getResult();
+                        Log.d(TAG, "Config params updated: " + updated);
+                        prefs.setString("download_url",mFirebaseRemoteConfig.getString("download_url"));
+                    } else {
+                    }
+
+                    progress_circular.setVisibility(View.GONE);
+                    btn_buy_source_code.setVisibility(View.VISIBLE);
+                });
     }
 
     private void initViews() {
@@ -93,6 +132,7 @@ public class MainActivity extends AppCompatActivity {
         onOff = findViewById(R.id.OnOff);
         coins = findViewById(R.id.coins);
         about = findViewById(R.id.about);
+        progress_circular = findViewById(R.id.progress_circular);
         privacy = findViewById(R.id.privacy);
         mAdView    = findViewById(R.id.adView);
         btn_show_interstitial    = findViewById(R.id.btn_show_interstitial);

@@ -11,6 +11,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 
@@ -23,6 +24,12 @@ import com.android.billingclient.api.ProductDetails;
 import com.android.billingclient.api.Purchase;
 import com.android.billingclient.api.QueryProductDetailsParams;
 import com.android.billingclient.api.QueryPurchasesParams;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.common.collect.ImmutableList;
@@ -46,6 +53,9 @@ public class RemoveAdsActivity extends AppCompatActivity implements RecycleViewI
     Handler handler;
     ExtendedFloatingActionButton btn_restore_fab;
     RemoveAdsAdapter adapter;
+    AdView mAdView;
+    AdRequest adRequest;
+    private InterstitialAd mInterstitialAd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +84,20 @@ public class RemoveAdsActivity extends AppCompatActivity implements RecycleViewI
         btn_restore_fab.setOnClickListener(v -> {
            restorePurchases();
         });
+
+        //Checks if the user has a removeAd if not then show ads.
+        if (!prefs.isRemoveAd()) {
+            MobileAds.initialize(this, initializationStatus -> {
+            });
+            adRequest = new AdRequest.Builder().build();
+            loadBannerAd();
+        } else {
+            mAdView.setVisibility(View.GONE);
+        }
+    }
+
+    void loadBannerAd() {
+        mAdView.loadAd(adRequest);
     }
 
     void establishConnection() {
@@ -143,8 +167,6 @@ public class RemoveAdsActivity extends AppCompatActivity implements RecycleViewI
         billingClient.launchBillingFlow(activity, billingFlowParams);
     }
 
-
-
     void handlePurchase(Purchase purchases) {
         if(!purchases.isAcknowledged()){
             billingClient.acknowledgePurchase(AcknowledgePurchaseParams
@@ -157,10 +179,18 @@ public class RemoveAdsActivity extends AppCompatActivity implements RecycleViewI
                     // true - No ads
                     // false - showing ads.
                     prefs.setIsRemoveAd(true);
-                    //  goBack();
+                     reloadScreen();
                 }
             });
         }
+    }
+
+    private void reloadScreen() {
+        //Reload the screen to activate the removeAd and remove the actual Ad off the screen.
+        finish();
+        overridePendingTransition(0, 0);
+        startActivity(getIntent());
+        overridePendingTransition(0, 0);
     }
 
     protected void onResume() {
@@ -178,7 +208,6 @@ public class RemoveAdsActivity extends AppCompatActivity implements RecycleViewI
                 }
         );
     }
-
 
     void restorePurchases() {
         billingClient = BillingClient.newBuilder(this).enablePendingPurchases().setListener((billingResult, list) -> {
@@ -218,6 +247,7 @@ public class RemoveAdsActivity extends AppCompatActivity implements RecycleViewI
         productDetailsList = new ArrayList<>();
         toolbar = findViewById(R.id.toolbar);
         recyclerView = findViewById(R.id.recyclerview);
+        mAdView    = findViewById(R.id.adView);
         btn_restore_fab = findViewById(R.id.fab);
         loadProducts = findViewById(R.id.loadProducts);
 

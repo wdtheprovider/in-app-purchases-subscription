@@ -1,5 +1,6 @@
 plugins {
     id 'com.android.application'
+    id 'com.google.gms.google-services'
 }
 
 android {
@@ -45,6 +46,12 @@ dependencies {
     implementation 'com.google.guava:guava:24.1-jre'
 
     implementation 'com.google.android.gms:play-services-ads:21.3.0'
+    implementation platform('com.google.firebase:firebase-bom:31.0.1')
+    implementation 'com.google.firebase:firebase-analytics'
+    implementation 'com.onesignal:OneSignal:[4.0.0, 4.99.99]'
+
+    implementation platform('com.google.firebase:firebase-bom:31.0.1')
+    implementation 'com.google.firebase:firebase-config'
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

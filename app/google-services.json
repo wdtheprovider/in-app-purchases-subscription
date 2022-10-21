@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "541792402684",
+    "project_id": "demos-f7561",
+    "storage_bucket": "demos-f7561.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:541792402684:android:a4ae7e8fd959374d836b79",
+        "android_client_info": {
+          "package_name": "com.wdtheprovider.inapppurchase"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "541792402684-kbemlft03rdp2aiemda8itbhnil73irb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD4E2ym63C9CED9aDATOxyNuCTRJ6csYX4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "541792402684-kbemlft03rdp2aiemda8itbhnil73irb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

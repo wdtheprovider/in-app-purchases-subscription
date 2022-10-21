@@ -56,7 +56,6 @@ public class BuyCodeActivity extends AppCompatActivity implements RecycleViewInt
     Button btn_dwn_source_code;
 
     private static final int REQUEST_CODE = 100;
-    public static final String fileURL = "3333333333";
     String fileName = "SourceCode.zip";
 
     public void downloadImage(String url, String outputFileName) {
@@ -105,7 +104,7 @@ public class BuyCodeActivity extends AppCompatActivity implements RecycleViewInt
         btn_dwn_source_code.setOnClickListener(v -> {
            if(prefs.canDownload()){
                showSnackbar(v,"Hooray, Downloading has started");
-               downloadImage(fileURL,fileName);
+               downloadImage(prefs.getString("download_url",""),fileName);
            }else {
                showSnackbar(v,"Oops, You need to buy the source code first.");
            }
