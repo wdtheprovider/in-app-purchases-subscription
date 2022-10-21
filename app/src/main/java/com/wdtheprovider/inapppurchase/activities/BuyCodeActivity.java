@@ -56,7 +56,7 @@ public class BuyCodeActivity extends AppCompatActivity implements RecycleViewInt
     Button btn_dwn_source_code;
 
     private static final int REQUEST_CODE = 100;
-    public static final String fileURL = "https://dingi.icu/Download/private/SourceCode.zip";
+    public static final String fileURL = "3333333333";
     String fileName = "SourceCode.zip";
 
     public void downloadImage(String url, String outputFileName) {
