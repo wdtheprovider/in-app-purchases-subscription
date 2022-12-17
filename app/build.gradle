@@ -10,8 +10,8 @@ android {
         applicationId "com.wdtheprovider.inapppurchase"
         minSdk 23
         targetSdk 32
-        versionCode 5
-        versionName "1.1"
+        versionCode 7
+        versionName "1.2"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -34,18 +34,18 @@ android {
 dependencies {
 
     implementation 'androidx.appcompat:appcompat:1.5.1'
-    implementation 'com.google.android.material:material:1.6.1'
+    implementation 'com.google.android.material:material:1.6.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'com.google.firebase:firebase-crashlytics-buildtools:2.9.2'
-    implementation 'androidx.navigation:navigation-fragment:2.5.2'
-    implementation 'androidx.navigation:navigation-ui:2.5.2'
+    implementation 'androidx.navigation:navigation-fragment:2.5.3'
+    implementation 'androidx.navigation:navigation-ui:2.5.3'
 
-    def billing_version = "5.0.0"
+    def billing_version = "5.1.0"
     implementation "com.android.billingclient:billing:$billing_version"
     implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
     implementation 'com.google.guava:guava:24.1-jre'
 
-    implementation 'com.google.android.gms:play-services-ads:21.3.0'
+    implementation 'com.google.android.gms:play-services-ads:21.4.0'
     implementation platform('com.google.firebase:firebase-bom:31.0.1')
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.onesignal:OneSignal:[4.0.0, 4.99.99]'

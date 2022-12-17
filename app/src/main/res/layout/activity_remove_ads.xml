@@ -105,13 +105,13 @@
                     android:id="@+id/adView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_below="@+id/recyclerview"
                     android:layout_marginStart="1dp"
                     android:layout_marginTop="20dp"
                     android:layout_marginEnd="1dp"
-                    android:layout_below="@+id/recyclerview"
                     android:layout_marginBottom="1dp"
                     app:adSize="SMART_BANNER"
-                    app:adUnitId="ca-app-pub-3940256099942544/6300978111" />
+                    app:adUnitId="ca-app-pub-1426300554937726/1090273746" />
 
             </RelativeLayout>
         </LinearLayout>

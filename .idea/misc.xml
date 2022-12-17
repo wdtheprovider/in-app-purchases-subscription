@@ -4,6 +4,7 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="app/src/main/res/layout/activity_buy_code.xml" value="0.2546875" />
+        <entry key="app/src/main/res/layout/activity_in_app_purchase.xml" value="0.2546875" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.2546875" />
         <entry key="app/src/main/res/layout/activity_remove_ads.xml" value="0.2546875" />
         <entry key="app/src/main/res/xml/remote_config_defaults.xml" value="0.184375" />

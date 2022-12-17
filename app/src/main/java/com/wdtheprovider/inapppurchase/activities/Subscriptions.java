@@ -177,7 +177,6 @@ public class Subscriptions extends AppCompatActivity implements RecycleViewInter
         billingClient.acknowledgePurchase(acknowledgePurchaseParams, billingResult -> {
             if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
                 //use prefs to set premium
-              //  Toast.makeText(Subscriptions.this, "Subscription activated, Enjoy!", Toast.LENGTH_SHORT).show();
                 //Setting premium to 1
                 // 1 - premium
                 // 0 - no premium

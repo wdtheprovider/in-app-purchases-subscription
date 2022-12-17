@@ -136,25 +136,52 @@
         </LinearLayout>
     </LinearLayout>
 
-    <ProgressBar
-        android:layout_below="@id/container_2"
-        android:id="@+id/progress_circular"
-        android:layout_marginTop="10dp"
+    <LinearLayout
+        android:id="@+id/container_4"
+        android:orientation="vertical"
+        android:layout_marginBottom="10dp"
+        android:layout_below="@+id/container_2"
+        android:gravity="center_vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_gravity="center_horizontal"
+            android:textColor="@color/white"
+            android:padding="20dp"
+            android:textAlignment="center"
+            android:text="Listing Subscriptions and In-App Purchase products in one screen"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <Button
+            android:id="@+id/btn_combined"
+            android:layout_gravity="center_horizontal"
+            android:text="Combined Products"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progress_circular"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/container_4"
+        android:layout_marginTop="10dp" />
 
     <Button
         android:id="@+id/btn_buy_source_code"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="invisible"
-        android:layout_below="@id/container_2"
+        android:layout_below="@id/container_4"
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
         android:text="@string/buy_source_code"
-        android:textColor="@color/white" />
+        android:textColor="@color/white"
+        android:visibility="invisible" />
 
     <Button
         android:id="@+id/btn_show_interstitial"
@@ -163,6 +190,7 @@
         android:layout_below="@id/btn_buy_source_code"
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
+        android:visibility="invisible"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
         android:text="Show interstitial Ad"
@@ -178,7 +206,7 @@
         android:layout_marginEnd="1dp"
         android:layout_marginBottom="1dp"
         app:adSize="SMART_BANNER"
-        app:adUnitId="ca-app-pub-3940256099942544/6300978111" />
+        app:adUnitId="ca-app-pub-1426300554937726/2905369559" />
 
 
 

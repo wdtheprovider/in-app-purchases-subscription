@@ -7,12 +7,10 @@ import com.wdtheprovider.inapppurchase.R;
 
 public class Prefs {
 
-    private final Context context;
     private final SharedPreferences sharedPreferences;
     private final SharedPreferences.Editor editor;
 
     public Prefs(Context context) {
-        this.context = context;
         sharedPreferences = context.getSharedPreferences(context.getString(R.string.app_name), Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
     }
