@@ -7,6 +7,10 @@
         <entry key="app/src/main/res/layout/activity_in_app_purchase.xml" value="0.2546875" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.2546875" />
         <entry key="app/src/main/res/layout/activity_remove_ads.xml" value="0.2546875" />
+        <entry key="app/src/main/res/layout/activity_splash.xml" value="0.37604166666666666" />
+        <entry key="app/src/main/res/layout/activity_subscriptions.xml" value="0.37604166666666666" />
+        <entry key="app/src/main/res/layout/product_item.xml" value="0.37604166666666666" />
+        <entry key="app/src/main/res/layout/sub_item.xml" value="0.37604166666666666" />
         <entry key="app/src/main/res/xml/remote_config_defaults.xml" value="0.184375" />
       </map>
     </option>

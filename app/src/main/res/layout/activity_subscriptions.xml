@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/screen_bg_dark"
+    android:background="@color/white"
     tools:context=".activities.Subscriptions">
 
     <androidx.appcompat.widget.Toolbar
@@ -21,10 +21,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:foregroundTint="@color/orange"
-        app:backgroundTint="@color/white"
-        android:backgroundTint="@color/orange"
+        app:backgroundTint="@color/charcoal"
+        android:backgroundTint="@color/white"
         android:layout_alignParentEnd="true"
-        android:textColor="@color/white"
+        android:textColor="@color/charcoal"
         android:tint="@color/orange"
         android:text="@string/restore_purchases"
         android:layout_alignParentBottom="true"
@@ -49,7 +49,7 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_margin="20dp"
                 android:src="@drawable/ic_sub"
-                android:visibility="invisible" />
+                android:visibility="visible" />
 
             <RelativeLayout
                 android:id="@+id/cc"
@@ -85,7 +85,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
                         android:text="@string/remove_ads"
-                        android:textColor="@color/white"
+                        android:textColor="@color/charcoal"
                         android:textSize="20sp"
                         android:textStyle="bold" />
 
@@ -115,10 +115,10 @@
 
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
+                android:padding="10dp"
                 android:gravity="center"
                 android:text="@string/subscription_terms"
-                android:textColor="@color/white"
+                android:textColor="@color/charcoal"
                 android:textStyle="bold" />
 
         </LinearLayout>
