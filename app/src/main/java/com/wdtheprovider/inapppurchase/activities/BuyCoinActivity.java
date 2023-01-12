@@ -241,6 +241,14 @@ public class BuyCoinActivity extends AppCompatActivity implements RecycleViewInt
         );
     }
 
+    private void reloadScreen() {
+        //Reload the screen to activate the removeAd and remove the actual Ad off the screen.
+        finish();
+        overridePendingTransition(0, 0);
+        startActivity(getIntent());
+        overridePendingTransition(0, 0);
+    }
+
     @Override
     public void onBackPressed() {
         super.onBackPressed();

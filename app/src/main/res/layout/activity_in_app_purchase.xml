@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/screen_bg_dark"
+    tools:context=".activities.BuyCodeActivity">
+
+  <androidx.appcompat.widget.Toolbar
+      android:id="@+id/toolbar"
+      android:layout_width="match_parent"
+      android:layout_height="?actionBarSize"
+      android:layout_alignParentTop="true"
+      android:background="@color/orange"
+      app:title="@string/app_name"
+      app:titleTextColor="@color/white" />
+
+  <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+      android:id="@+id/fab"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:foregroundTint="@color/purple_500"
+      app:backgroundTint="@color/white"
+      android:backgroundTint="@color/orange"
+      android:layout_alignParentEnd="true"
+      android:textColor="@color/white"
+      android:tint="@color/orange"
+      android:text="@string/restore_purchases"
+      android:layout_alignParentBottom="true"
+      android:src="@drawable/ic_baseline_restore_24"
+      android:contentDescription="@string/restore_purchases"
+      android:layout_margin="16dp" />
+
+  <ScrollView
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_below="@id/toolbar">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+      <TextView
+          android:id="@+id/imgview"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center_horizontal"
+          android:layout_margin="20dp"
+          android:layout_marginTop="20dp"
+          android:text="Multiple Product types"
+          android:textColor="@color/white"
+          android:textSize="20sp" />
+
+      <RelativeLayout
+          android:id="@+id/cc"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:orientation="vertical"
+          android:padding="10dp">
+
+        <LinearLayout
+            android:id="@+id/RemoveAds"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+          <TextView
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_marginStart="10dp"
+              android:text="@string/in_app_purchase_explaination"
+              android:textColor="@color/white"
+              android:textSize="14sp"
+              android:textStyle="bold" />
+
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/inAppRecyclerview"
+            android:layout_marginTop="10dp"
+            android:visibility="visible" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/inAppRecyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/RemoveAds"
+            android:layout_marginTop="10dp"
+            android:visibility="visible" />
+
+        <ProgressBar
+            android:id="@+id/loadProducts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/RemoveAds"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="100dp"
+            android:visibility="visible" />
+      </RelativeLayout>
+    </LinearLayout>
+  </ScrollView>
+</RelativeLayout>

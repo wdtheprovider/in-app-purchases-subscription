@@ -168,7 +168,6 @@ public class Subscriptions extends AppCompatActivity implements RecycleViewInter
     }
 
     void verifySubPurchase(Purchase purchases) {
-
         AcknowledgePurchaseParams acknowledgePurchaseParams = AcknowledgePurchaseParams
                 .newBuilder()
                 .setPurchaseToken(purchases.getPurchaseToken())
@@ -181,17 +180,17 @@ public class Subscriptions extends AppCompatActivity implements RecycleViewInter
                 // 1 - premium
                 // 0 - no premium
                 prefs.setPremium(1);
-                goBack();
-            }
+                handler.postDelayed(this::reloadScreen,2000);            }
         });
     }
 
-    private void goBack() {
-        handler.postDelayed(() -> {
-            startActivity(new Intent(getApplicationContext(),MainActivity.class));
-            finish();
-        },2000);
 
+    private void reloadScreen() {
+        //Reload the screen to activate the removeAd and remove the actual Ad off the screen.
+        finish();
+        overridePendingTransition(0, 0);
+        startActivity(getIntent());
+        overridePendingTransition(0, 0);
     }
 
     protected void onResume() {
@@ -234,7 +233,6 @@ public class Subscriptions extends AppCompatActivity implements RecycleViewInter
                                     if(list.size()>0){
                                         prefs.setPremium(1); // set 1 to activate premium feature
                                         showSnackBar(btn_restore_fab, "Successfully restored");
-                                        goBack();
                                     }else {
                                         showSnackBar(btn_restore_fab, "Oops, No purchase found.");
                                         prefs.setPremium(0); // set 0 to de-activate premium feature

@@ -91,7 +91,9 @@ public class RemoveAdsActivity extends AppCompatActivity implements RecycleViewI
             });
             adRequest = new AdRequest.Builder().build();
             loadBannerAd();
+            Log.d("RemoveAds","Remove ads off");
         } else {
+            Log.d("RemoveAds","Remove ads On");
             mAdView.setVisibility(View.GONE);
         }
     }

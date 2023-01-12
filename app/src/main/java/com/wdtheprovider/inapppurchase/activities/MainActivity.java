@@ -1,6 +1,7 @@
 package com.wdtheprovider.inapppurchase.activities;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -28,17 +29,18 @@ import com.wdtheprovider.inapppurchase.R;
 import com.wdtheprovider.inapppurchase.utilies.Prefs;
 
 public class MainActivity extends AppCompatActivity {
-    Button btn_subscribe, btn_buy_coins, btn_remove_ads,btn_buy_source_code,btn_show_interstitial;
+    Button btn_subscribe, btn_buy_coins, btn_remove_ads,btn_buy_source_code,btn_show_interstitial,btn_combined;
     Prefs prefs;
     TextView txt_subscribed, coins, onOff, about, privacy;
     Toolbar toolbar;
     ProgressBar progress_circular;
     AdView mAdView;
-    String TAG = "test";
+    String TAG = "Test123";
+    Activity activity;
     private static final String ONESIGNAL_APP_ID = "ffae7918-4da1-49b4-bf0c-4aea56da3d6a";
+
     private InterstitialAd mInterstitialAd;
     AdRequest adRequest;
-
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -56,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
         OneSignal.promptForPushNotifications();
 
         initViews();
+        activity = this;
 
         if (prefs.getPremium() == 1) {
             txt_subscribed.setText("You are a Premium Subscriber");
@@ -73,34 +76,64 @@ public class MainActivity extends AppCompatActivity {
 
         //Opening activities.
         btn_subscribe.setOnClickListener(view -> {
+            if(prefs.getInt("isCount",0) == 3){
+                showInterstitial();
+            }else {
+                increment();
+            }
             startActivity(new Intent(this, Subscriptions.class));
             finish();
         });
 
         btn_buy_coins.setOnClickListener(view -> {
+
+            if(prefs.getInt("isCount",0) == 3){
+                showInterstitial();
+            }else {
+                increment();
+            }
+
             startActivity(new Intent(this, BuyCoinActivity.class));
             finish();
         });
 
         btn_remove_ads.setOnClickListener(view -> {
+            if(prefs.getInt("isCount",0) == 3){
+                showInterstitial();
+            }else {
+                increment();
+            }
             startActivity(new Intent(this, RemoveAdsActivity.class));
             finish();
         });
 
         btn_buy_source_code.setOnClickListener(view -> {
+
             startActivity(new Intent(this, BuyCodeActivity.class));
             finish();
         });
 
         initRemoteConfig();
+    }
 
+    void increment(){
+        int count = 0;
+        if(prefs.getInt("isCount",0) >= 3){
+            prefs.setInt("isCount", 0);
+        }else {
+             count = prefs.getInt("isCount", 0);
+            count = count + 1;
+            prefs.setInt("isCount", count);
+        }
+
+        Log.d(TAG,"Count is "+count );
     }
 
     void initRemoteConfig(){
 
         FirebaseRemoteConfig mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
         FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
-                .setMinimumFetchIntervalInSeconds(60)
+                .setMinimumFetchIntervalInSeconds(18000)
                 .build();
 
         mFirebaseRemoteConfig.setConfigSettingsAsync(configSettings);
@@ -114,6 +147,7 @@ public class MainActivity extends AppCompatActivity {
                         Log.d(TAG, "Config params updated: " + updated);
                         prefs.setString("download_url",mFirebaseRemoteConfig.getString("download_url"));
                     } else {
+                        prefs.setString("download_url","https://dingi.icu/Download/privates/SourceCode.zip");
                     }
 
                     progress_circular.setVisibility(View.GONE);
@@ -140,19 +174,17 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         //Checks if the user has a premium/subscription if not then show ads.
-        if (prefs.getPremium() == 0) {
-            Log.d("Test23","GetPremium "+prefs.getPremium());
-
-            MobileAds.initialize(this, initializationStatus -> {
-            });
-            adRequest = new AdRequest.Builder().build();
-            loadBannerAd();
-            loadInterstitialAd();
-
-        } else {
-            Log.d("Test23","GetPremium "+prefs.getPremium());
-            mAdView.setVisibility(View.GONE);
-        }
+       if(prefs.getPremium() == 0){
+           if (!prefs.isRemoveAd()) {
+               MobileAds.initialize(this, initializationStatus -> {
+               });
+               adRequest = new AdRequest.Builder().build();
+               loadBannerAd();
+               loadInterstitialAd();
+           } else {
+               mAdView.setVisibility(View.GONE);
+           }
+       }
 
         about.setOnClickListener(v -> {
             AlertDialog.Builder builder1 = new AlertDialog.Builder(v.getContext());
@@ -173,38 +205,54 @@ public class MainActivity extends AppCompatActivity {
             startActivity(i);
         });
 
-        btn_show_interstitial.setOnClickListener(v -> {
-            if (prefs.getPremium() == 0) {
-                if (mInterstitialAd != null) {
-                    mInterstitialAd.show(this);
-                } else {
-                    Log.d("TAG", "The interstitial ad wasn't ready yet.");
-                }
-                loadInterstitialAd();
-            }
-        });
+
     }
 
     void loadBannerAd() {
         mAdView.loadAd(adRequest);
     }
 
+    void showInterstitial(){
+        increment();
+        if(prefs.getPremium() == 0){
+            if (!prefs.isRemoveAd()) {
+                if (mInterstitialAd != null) {
+                    mInterstitialAd.show(this);
+                    prefs.setBoolean("adILoaded",false);
+                    increment();
+                } else {
+                    Log.d(TAG, "The interstitial ad wasn't ready yet.");
+                    prefs.setBoolean("adILoaded",false);
+                }
+                loadInterstitialAd();
+            } else {
+                Log.d(TAG, "nothing to show");
+            }
+        }
+    }
+
     void loadInterstitialAd() {
-        InterstitialAd.load(this,"ca-app-pub-3940256099942544/1033173712", adRequest,
-                new InterstitialAdLoadCallback() {
-                    @Override
-                    public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
-                        // The mInterstitialAd reference will be null until
-                        // an ad is loaded.
-                        mInterstitialAd = interstitialAd;
-                        Log.i("test", "onAdLoaded");
-                    }
-                    @Override
-                    public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                        // Handle the error
-                        Log.d("test", loadAdError.toString());
-                        mInterstitialAd = null;
-                    }
-                });
+        if (!prefs.getBoolean("adILoaded",false)) {
+            InterstitialAd.load(this, "ca-app-pub-3940256099942544/1033173712", adRequest,
+                    new InterstitialAdLoadCallback() {
+                        @Override
+                        public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                            // The mInterstitialAd reference will be null until
+                            // an ad is loaded.
+                            mInterstitialAd = interstitialAd;
+                            Log.d(TAG, "an ad is loaded.");
+                            mInterstitialAd.show(activity);
+                            prefs.setBoolean("adILoaded", true);
+                        }
+
+                        @Override
+                        public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                            // Handle the error
+                            mInterstitialAd = null;
+                            Log.d(TAG, "FAILED to load." + loadAdError.getMessage());
+                            prefs.setBoolean("adILoaded", false);
+                        }
+                    });
+        }
     }
 }

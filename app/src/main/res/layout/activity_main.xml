@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             android:padding="20dp"
             android:text="About"
-            android:textColor="@color/white" />
+            android:textColor="@color/blue" />
 
         <TextView
             android:id="@+id/privacy"
@@ -40,7 +40,7 @@
             android:layout_height="wrap_content"
             android:padding="20dp"
             android:text="Privacy Policy"
-            android:textColor="@color/white" />
+            android:textColor="@color/blue" />
     </LinearLayout>
 
 
@@ -145,21 +145,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <TextView
-            android:layout_gravity="center_horizontal"
-            android:textColor="@color/white"
-            android:padding="20dp"
-            android:textAlignment="center"
-            android:text="Listing Subscriptions and In-App Purchase products in one screen"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        <Button
-            android:id="@+id/btn_combined"
-            android:layout_gravity="center_horizontal"
-            android:text="Combined Products"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
 
     </LinearLayout>
 
