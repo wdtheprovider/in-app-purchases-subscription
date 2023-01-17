@@ -82,20 +82,24 @@ public class RemoveAdsActivity extends AppCompatActivity implements RecycleViewI
 
         //restore purchases
         btn_restore_fab.setOnClickListener(v -> {
-           restorePurchases();
+            restorePurchases();
         });
 
         //Checks if the user has a removeAd if not then show ads.
-        if (!prefs.isRemoveAd()) {
-            MobileAds.initialize(this, initializationStatus -> {
-            });
-            adRequest = new AdRequest.Builder().build();
-            loadBannerAd();
-            Log.d("RemoveAds","Remove ads off");
-        } else {
-            Log.d("RemoveAds","Remove ads On");
-            mAdView.setVisibility(View.GONE);
+        //Checks if the user has a premium/subscription if not then show ads.
+        if (prefs.getPremium() == 0) {
+            if (!prefs.isRemoveAd()) {
+                MobileAds.initialize(this, initializationStatus -> {
+                });
+                adRequest = new AdRequest.Builder().build();
+                loadBannerAd();
+                Log.d("RemoveAds", "Remove ads off");
+            } else {
+                Log.d("RemoveAds", "Remove ads On");
+                mAdView.setVisibility(View.GONE);
+            }
         }
+
     }
 
     void loadBannerAd() {
@@ -170,7 +174,7 @@ public class RemoveAdsActivity extends AppCompatActivity implements RecycleViewI
     }
 
     void handlePurchase(Purchase purchases) {
-        if(!purchases.isAcknowledged()){
+        if (!purchases.isAcknowledged()) {
             billingClient.acknowledgePurchase(AcknowledgePurchaseParams
                     .newBuilder()
                     .setPurchaseToken(purchases.getPurchaseToken())
@@ -181,7 +185,7 @@ public class RemoveAdsActivity extends AppCompatActivity implements RecycleViewI
                     // true - No ads
                     // false - showing ads.
                     prefs.setIsRemoveAd(true);
-                     reloadScreen();
+                    reloadScreen();
                 }
             });
         }
@@ -249,7 +253,7 @@ public class RemoveAdsActivity extends AppCompatActivity implements RecycleViewI
         productDetailsList = new ArrayList<>();
         toolbar = findViewById(R.id.toolbar);
         recyclerView = findViewById(R.id.recyclerview);
-        mAdView    = findViewById(R.id.adView);
+        mAdView = findViewById(R.id.adView);
         btn_restore_fab = findViewById(R.id.fab);
         loadProducts = findViewById(R.id.loadProducts);
 
@@ -258,7 +262,7 @@ public class RemoveAdsActivity extends AppCompatActivity implements RecycleViewI
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        startActivity(new Intent(activity,MainActivity.class));
+        startActivity(new Intent(activity, MainActivity.class));
         finish();
     }
 

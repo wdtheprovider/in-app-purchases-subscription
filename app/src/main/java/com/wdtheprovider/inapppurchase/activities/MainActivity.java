@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
             txt_subscribed.setText("You are not Subscribed");
         }
 
-        if (prefs.isRemoveAd()) {
+        if (prefs.isRemoveAd() || prefs.getPremium() == 1) {
             onOff.setText("ON");
         } else {
             onOff.setText("OFF");
@@ -108,7 +108,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         btn_buy_source_code.setOnClickListener(view -> {
-
             startActivity(new Intent(this, BuyCodeActivity.class));
             finish();
         });

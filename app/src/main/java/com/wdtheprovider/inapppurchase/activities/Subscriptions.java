@@ -3,10 +3,12 @@ package com.wdtheprovider.inapppurchase.activities;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -46,10 +48,12 @@ public class Subscriptions extends AppCompatActivity implements RecycleViewInter
     Handler handler;
     ExtendedFloatingActionButton btn_restore_fab;
     SubscriptionAdapter adapter;
-    boolean bought = false;
+    TextView manageSub,restoreSub;
 
     private void initViews() {
         toolbar = findViewById(R.id.toolbar);
+        manageSub = findViewById(R.id.manageSub);
+        restoreSub = findViewById(R.id.restore);
         setSupportActionBar(toolbar);
         productDetailsList = new ArrayList<>();
         recyclerView = findViewById(R.id.recyclerview);
@@ -73,8 +77,8 @@ public class Subscriptions extends AppCompatActivity implements RecycleViewInter
                 .enablePendingPurchases()
                 .setListener(
                         (billingResult, list) -> {
-                            if(billingResult.getResponseCode()==BillingClient.BillingResponseCode.OK && list !=null) {
-                                for (Purchase purchase: list){
+                            if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK && list != null) {
+                                for (Purchase purchase : list) {
                                     verifySubPurchase(purchase);
                                 }
                             }
@@ -85,10 +89,17 @@ public class Subscriptions extends AppCompatActivity implements RecycleViewInter
         establishConnection();
 
         //restore purchases
-        btn_restore_fab.setOnClickListener(v -> {
+        restoreSub.setOnClickListener(v -> {
             restorePurchases();
         });
 
+            //Manage subscription
+        manageSub.setOnClickListener(v -> {
+            String url = "https://play.google.com/store/account/subscriptions";
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(url));
+            startActivity(i);
+        });
     }
 
     void establishConnection() {
@@ -118,7 +129,7 @@ public class Subscriptions extends AppCompatActivity implements RecycleViewInter
                 QueryProductDetailsParams.Product.newBuilder()
                         .setProductId("test_sub_weekly1")
                         .setProductType(BillingClient.ProductType.SUBS)
-                        .build() ,
+                        .build(),
 
                 //Product 2
                 QueryProductDetailsParams.Product.newBuilder()
@@ -144,7 +155,7 @@ public class Subscriptions extends AppCompatActivity implements RecycleViewInter
                         recyclerView.setHasFixedSize(true);
                         recyclerView.setLayoutManager(new LinearLayoutManager(Subscriptions.this, LinearLayoutManager.VERTICAL, false));
                         recyclerView.setAdapter(adapter);
-                    },2000);
+                    }, 2000);
 
                 }
         );
@@ -180,7 +191,8 @@ public class Subscriptions extends AppCompatActivity implements RecycleViewInter
                 // 1 - premium
                 // 0 - no premium
                 prefs.setPremium(1);
-                handler.postDelayed(this::reloadScreen,2000);            }
+                handler.postDelayed(this::reloadScreen, 2000);
+            }
         });
     }
 
@@ -195,6 +207,7 @@ public class Subscriptions extends AppCompatActivity implements RecycleViewInter
 
     protected void onResume() {
         super.onResume();
+
         billingClient.queryPurchasesAsync(
                 QueryPurchasesParams.newBuilder().setProductType(BillingClient.ProductType.SUBS).build(),
                 (billingResult, list) -> {
@@ -214,9 +227,10 @@ public class Subscriptions extends AppCompatActivity implements RecycleViewInter
         launchPurchaseFlow(productDetailsList.get(pos));
     }
 
-    void restorePurchases(){
+    void restorePurchases() {
 
-        billingClient = BillingClient.newBuilder(this).enablePendingPurchases().setListener((billingResult, list) -> {}).build();
+        billingClient = BillingClient.newBuilder(this).enablePendingPurchases().setListener((billingResult, list) -> {
+        }).build();
         final BillingClient finalBillingClient = billingClient;
         billingClient.startConnection(new BillingClientStateListener() {
             @Override
@@ -226,14 +240,14 @@ public class Subscriptions extends AppCompatActivity implements RecycleViewInter
             @Override
             public void onBillingSetupFinished(@NonNull BillingResult billingResult) {
 
-                if(billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK){
+                if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
                     finalBillingClient.queryPurchasesAsync(
                             QueryPurchasesParams.newBuilder().setProductType(BillingClient.ProductType.SUBS).build(), (billingResult1, list) -> {
-                                if (billingResult1.getResponseCode() == BillingClient.BillingResponseCode.OK){
-                                    if(list.size()>0){
+                                if (billingResult1.getResponseCode() == BillingClient.BillingResponseCode.OK) {
+                                    if (list.size() > 0) {
                                         prefs.setPremium(1); // set 1 to activate premium feature
                                         showSnackBar(btn_restore_fab, "Successfully restored");
-                                    }else {
+                                    } else {
                                         showSnackBar(btn_restore_fab, "Oops, No purchase found.");
                                         prefs.setPremium(0); // set 0 to de-activate premium feature
                                     }
@@ -244,15 +258,14 @@ public class Subscriptions extends AppCompatActivity implements RecycleViewInter
         });
     }
 
-    public void showSnackBar(View view, String message)
-    {
+    public void showSnackBar(View view, String message) {
         Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        startActivity(new Intent(activity,MainActivity.class));
+        startActivity(new Intent(activity, MainActivity.class));
         finish();
     }
 }

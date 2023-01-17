@@ -10,7 +10,7 @@ android {
         applicationId "com.wdtheprovider.inapppurchase"
         minSdk 23
         targetSdk 32
-        versionCode 7
+        versionCode 8
         versionName "1.2"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
