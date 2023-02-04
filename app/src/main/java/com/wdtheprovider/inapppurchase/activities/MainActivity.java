@@ -24,6 +24,9 @@ import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
+import com.microsoft.appcenter.AppCenter;
+import com.microsoft.appcenter.analytics.Analytics;
+import com.microsoft.appcenter.crashes.Crashes;
 import com.onesignal.OneSignal;
 import com.wdtheprovider.inapppurchase.R;
 import com.wdtheprovider.inapppurchase.utilies.Prefs;
@@ -61,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
         activity = this;
 
         if (prefs.getPremium() == 1) {
-            txt_subscribed.setText("You are a Premium Subscriber");
+            txt_subscribed.setText(prefs.getString("subType","You have a subscription"));
         } else {
             txt_subscribed.setText("You are not Subscribed");
         }
@@ -72,6 +75,9 @@ public class MainActivity extends AppCompatActivity {
             onOff.setText("OFF");
         }
 
+        AppCenter.start(getApplication(), "82a79f36-b2ca-4a67-a1a7-5b6aef089d44",
+                Analytics.class, Crashes.class);
+
         coins.setText(prefs.getInt("coins", 0) + " Remaining coins");
 
         //Opening activities.
@@ -81,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
             }else {
                 increment();
             }
-            startActivity(new Intent(this, Subscriptions.class));
+            startActivity(new Intent(this, SubscriptionActivity.class));
             finish();
         });
 

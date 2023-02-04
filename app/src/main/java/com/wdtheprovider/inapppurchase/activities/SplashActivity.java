@@ -44,7 +44,6 @@ public class SplashActivity extends AppCompatActivity {
         startActivity(new Intent(this,MainActivity.class));
         finish();
     }
-
     void checkSubscription(){
         billingClient = BillingClient.newBuilder(this).enablePendingPurchases().setListener((billingResult, list) -> {}).build();
         final BillingClient finalBillingClient = billingClient;
@@ -61,8 +60,13 @@ public class SplashActivity extends AppCompatActivity {
                             QueryPurchasesParams.newBuilder().setProductType(BillingClient.ProductType.SUBS).build(), (billingResult1, list) -> {
                         if (billingResult1.getResponseCode() == BillingClient.BillingResponseCode.OK){
                              if(list.size()>0){
+                                 prefs.setString("purchasedToken", list.get(0).getPurchaseToken());
+                                 prefs.setString("purchasedProductId", list.get(0).getProducts().get(0));
                                  prefs.setPremium(1); // set 1 to activate premium feature
                              }else {
+                                 prefs.setString("subType","No Subscription");
+                                 prefs.setString("purchasedToken","");
+                                 prefs.setString("purchasedToken","");
                                  prefs.setPremium(0); // set 0 to de-activate premium feature
                              }
                         }

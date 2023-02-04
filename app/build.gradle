@@ -6,11 +6,20 @@ plugins {
 android {
     compileSdk 32
 
+    signingConfigs {
+        releaseSigningConfig {
+            storeFile rootProject.file("app/none")
+            storePassword System.getProperty("WD@sabie076966")
+            keyAlias System.getProperty("In App Purchase")
+            keyPassword System.getProperty("WD@sabie076966")
+        }
+    }
+
     defaultConfig {
         applicationId "com.wdtheprovider.inapppurchase"
         minSdk 23
         targetSdk 32
-        versionCode 8
+        versionCode 9
         versionName "1.2"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -19,6 +28,7 @@ android {
     buildTypes {
         release {
             minifyEnabled false
+            signingConfig signingConfigs.releaseSigningConfig
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -44,6 +54,10 @@ dependencies {
     implementation "com.android.billingclient:billing:$billing_version"
     implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
     implementation 'com.google.guava:guava:24.1-jre'
+
+    def appCenterSdkVersion = '4.4.5'
+    implementation "com.microsoft.appcenter:appcenter-analytics:${appCenterSdkVersion}"
+    implementation "com.microsoft.appcenter:appcenter-crashes:${appCenterSdkVersion}"
 
     implementation 'com.google.android.gms:play-services-ads:21.4.0'
     implementation platform('com.google.firebase:firebase-bom:31.0.1')

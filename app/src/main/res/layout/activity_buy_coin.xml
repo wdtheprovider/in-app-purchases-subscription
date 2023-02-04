@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/screen_bg_dark"
-    tools:context=".activities.Subscriptions">
+    tools:context=".activities.SubscriptionActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"

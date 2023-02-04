@@ -1,37 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    tools:context=".activities.Subscriptions">
+    tools:context=".activities.SubscriptionActivity">
 
-    <androidx.appcompat.widget.Toolbar
+    <RelativeLayout
         android:id="@+id/toolbar"
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="?actionBarSize"
         android:layout_alignParentTop="true"
         android:background="@color/orange"
-        app:title="@string/app_name"
-        app:titleTextColor="@color/white" />
-
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/fab"
-        android:visibility="invisible"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_margin="16dp"
-        android:backgroundTint="@color/white"
-        android:contentDescription="@string/restore_purchases"
-        android:foregroundTint="@color/orange"
-        android:src="@drawable/ic_baseline_restore_24"
-        android:text="@string/restore_purchases"
-        android:textColor="@color/charcoal"
-        android:tint="@color/orange"
-        app:backgroundTint="@color/charcoal" />
+       >
+        <Button
+            android:id="@+id/btnDismiss"
+            android:text="Dismiss"
+            android:layout_centerVertical="true"
+            android:textColor="@color/white"
+            android:layout_marginLeft="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </RelativeLayout>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -42,15 +33,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-
-            <ImageView
-                android:id="@+id/imgview"
-                android:layout_width="150dp"
-                android:layout_height="150dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_margin="20dp"
-                android:src="@drawable/ic_sub"
-                android:visibility="visible" />
 
             <RelativeLayout
                 android:id="@+id/cc"
@@ -87,7 +69,7 @@
                         android:layout_marginStart="10dp"
                         android:text="@string/remove_ads"
                         android:textColor="@color/charcoal"
-                        android:textSize="20sp"
+                        android:textSize="18sp"
                         android:textStyle="bold" />
 
                 </LinearLayout>
@@ -98,9 +80,8 @@
                     android:layout_height="match_parent"
                     android:layout_below="@id/RemoveAds"
                     android:layout_marginTop="10dp"
-                    android:visibility="visible" />
-
-
+                    android:visibility="invisible" />
+                
                 <ProgressBar
                     android:id="@+id/loadProducts"
                     android:layout_width="wrap_content"

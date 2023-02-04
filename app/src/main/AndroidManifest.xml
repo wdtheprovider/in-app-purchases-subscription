@@ -27,7 +27,7 @@
             android:name=".activities.BuyCoinActivity"
             android:exported="true" />
         <activity
-            android:name=".activities.Subscriptions"
+            android:name=".activities.SubscriptionActivity"
             android:exported="true" />
         <activity
             android:name=".activities.MainActivity"
