@@ -16,14 +16,14 @@ import com.wdtheprovider.inapppurchase.interfaces.RecycleViewInterface;
 import java.util.List;
 import java.util.Objects;
 
-public class RemoveAdsAdapter extends RecyclerView.Adapter<RemoveAdsAdapter.BuyCoinsViewHolder> {
+public class BuyCodeAdapter extends RecyclerView.Adapter<BuyCodeAdapter.BuyCoinsViewHolder> {
 
     List<ProductDetails> productDetailsList;
     Context context;
     RecycleViewInterface recycleViewInterface;
     String TAG = "TestINAPP";
 
-    public RemoveAdsAdapter(Context context, List<ProductDetails> productDetailsList, RecycleViewInterface recycleViewInterface) {
+    public BuyCodeAdapter(Context context, List<ProductDetails> productDetailsList, RecycleViewInterface recycleViewInterface) {
         this.productDetailsList = productDetailsList;
         this.context = context;
         this.recycleViewInterface = recycleViewInterface;

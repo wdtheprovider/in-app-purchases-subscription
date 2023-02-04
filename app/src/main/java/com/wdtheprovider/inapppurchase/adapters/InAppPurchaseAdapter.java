@@ -16,13 +16,13 @@ import com.wdtheprovider.inapppurchase.interfaces.RecycleViewInterface;
 
 import java.util.List;
 
-public class SubscriptionAdapter extends RecyclerView.Adapter<SubscriptionAdapter.ProductDetailsViewHolder>  {
+public class InAppPurchaseAdapter extends RecyclerView.Adapter<InAppPurchaseAdapter.InAppPurchaseAdapterViewHolder>  {
 
     List<ProductDetails> productDetailsList;
     Context context;
     RecycleViewInterface recycleViewInterface;
 
-    public SubscriptionAdapter(Context context, List<ProductDetails> productDetailsList, RecycleViewInterface recycleViewInterface) {
+    public InAppPurchaseAdapter(Context context, List<ProductDetails> productDetailsList, RecycleViewInterface recycleViewInterface) {
         this.productDetailsList = productDetailsList;
         this.context = context;
         this.recycleViewInterface = recycleViewInterface;
@@ -30,20 +30,17 @@ public class SubscriptionAdapter extends RecyclerView.Adapter<SubscriptionAdapte
 
     @NonNull
     @Override
-    public ProductDetailsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.sub_item,parent,false);
-        return new ProductDetailsViewHolder(view);
+    public InAppPurchaseAdapterViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.product_item,parent,false);
+        return new InAppPurchaseAdapterViewHolder(view);
     }
 
     @SuppressLint("SetTextI18n")
     @Override
-    public void onBindViewHolder(@NonNull ProductDetailsViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull InAppPurchaseAdapterViewHolder holder, int position) {
         ProductDetails currentItem = productDetailsList.get(position);
         List<ProductDetails.SubscriptionOfferDetails> subDetails = currentItem.getSubscriptionOfferDetails();
-        assert subDetails != null;
-        holder.type.setText("1 "+currentItem.getName());
-        holder.duration.setText("/"+currentItem.getName());
-        holder.price.setText(subDetails.get(0).getPricingPhases().getPricingPhaseList().get(0).getFormattedPrice());
+        holder.product_name.setText(subDetails.get(0).getPricingPhases().getPricingPhaseList().get(0).getFormattedPrice()+" / "+currentItem.getName());
     }
 
     @Override
@@ -51,16 +48,12 @@ public class SubscriptionAdapter extends RecyclerView.Adapter<SubscriptionAdapte
         return productDetailsList.size();
     }
 
-    public class ProductDetailsViewHolder extends RecyclerView.ViewHolder{
-        TextView duration;
-        TextView price;
-        TextView type;
+    public class InAppPurchaseAdapterViewHolder extends RecyclerView.ViewHolder{
+        TextView product_name;
 
-        public ProductDetailsViewHolder(@NonNull View itemView) {
+        public InAppPurchaseAdapterViewHolder(@NonNull View itemView) {
             super(itemView);
-            price = itemView.findViewById(R.id.price);
-            type = itemView.findViewById(R.id.type);
-            duration = itemView.findViewById(R.id.duration);
+            product_name = itemView.findViewById(R.id.product_name);
             itemView.setOnClickListener(v -> recycleViewInterface.onItemClick(getAdapterPosition()));
         }
     }

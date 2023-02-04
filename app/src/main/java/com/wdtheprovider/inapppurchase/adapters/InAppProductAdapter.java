@@ -16,14 +16,13 @@ import com.wdtheprovider.inapppurchase.interfaces.RecycleViewInterface;
 import java.util.List;
 import java.util.Objects;
 
-public class RemoveAdsAdapter extends RecyclerView.Adapter<RemoveAdsAdapter.BuyCoinsViewHolder> {
+public class InAppProductAdapter extends RecyclerView.Adapter<InAppProductAdapter.InAppProductViewHolder> {
 
     List<ProductDetails> productDetailsList;
     Context context;
     RecycleViewInterface recycleViewInterface;
-    String TAG = "TestINAPP";
 
-    public RemoveAdsAdapter(Context context, List<ProductDetails> productDetailsList, RecycleViewInterface recycleViewInterface) {
+    public InAppProductAdapter(Context context, List<ProductDetails> productDetailsList, RecycleViewInterface recycleViewInterface) {
         this.productDetailsList = productDetailsList;
         this.context = context;
         this.recycleViewInterface = recycleViewInterface;
@@ -31,16 +30,16 @@ public class RemoveAdsAdapter extends RecyclerView.Adapter<RemoveAdsAdapter.BuyC
 
     @NonNull
     @Override
-    public BuyCoinsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.remove_ads_item,parent,false);
-        return new BuyCoinsViewHolder(view);
+    public InAppProductViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.buycoins_item,parent,false);
+        return new InAppProductViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull BuyCoinsViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull InAppProductViewHolder holder, int position) {
         ProductDetails currentItem = productDetailsList.get(position);
-        holder.txt_remove_ads_title.setText(currentItem.getName());
-        holder.txt_remove_ads_price.setText(Objects.requireNonNull(currentItem.getOneTimePurchaseOfferDetails()).getFormattedPrice());
+        holder.txt_name.setText(currentItem.getName());
+        holder.txt_price.setText(Objects.requireNonNull(currentItem.getOneTimePurchaseOfferDetails()).getFormattedPrice());
     }
 
     @Override
@@ -48,13 +47,13 @@ public class RemoveAdsAdapter extends RecyclerView.Adapter<RemoveAdsAdapter.BuyC
         return productDetailsList.size();
     }
 
-    public class BuyCoinsViewHolder extends RecyclerView.ViewHolder{
-        TextView txt_remove_ads_title, txt_remove_ads_price;
+    public class InAppProductViewHolder extends RecyclerView.ViewHolder{
+        TextView txt_name, txt_price;
 
-        public BuyCoinsViewHolder(@NonNull View itemView) {
+        public InAppProductViewHolder(@NonNull View itemView) {
             super(itemView);
-            txt_remove_ads_title = itemView.findViewById(R.id.product_name);
-            txt_remove_ads_price = itemView.findViewById(R.id.product_price);
+            txt_name = itemView.findViewById(R.id.product_name);
+            txt_price = itemView.findViewById(R.id.product_price);
             itemView.setOnClickListener(v -> recycleViewInterface.onItemClick(getAdapterPosition()));
         }
 
