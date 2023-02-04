@@ -1,0 +1,79 @@
+# Welcome to in-app-purchase - Upgrade and Downgrade of subsripitions (Android Studio Java*)
+
+In this ReadMe file i will explain and host codes for upgrading and dowgrading subscriptions In App Purchases.
+
+Pre-requisite
+- Subscription implemented fully with more than one subscription - check the main ReadMe file.
+- Published App on Play Store
+- Tester Device with GMS
+
+Configure Your Testing device by adding the gmail account to internal testing testers 
+and License testing (Watch the YouTube video for clarity: https://youtu.be/j6wWVMj-fi8 )
+
+
+The following methods (These are the methods you need for the IAP System to work, you can copy and paste)
+
+```java
+void establishConnection(){}
+void showProducts(){}
+void launchPurchaseFlow(){}
+void handlePurchase(Purchase purchases){}
+void restorePurchase(){}
+```
+
+[**Step 1: Add the Google Play Billing Library dependency**](#step-1-add-the-google-play-billing-library-dependency)
+
+[**Step 2: Initialize a BillingClient with PurchasesUpdatedListener**](#step-2-initialize-a-billingclient-with-purchasesupdatedlistener)
+
+[**Step 3: Establish a connection to Google Play**](#step-3-establish-a-connection-to-google-play)
+
+[**Step 4: Show products available to buy**](#step-4-show-products-available-to-buy)
+
+[**Step 5: Launch the purchase flow**](#step-5-launch-the-purchase-flow)
+
+[**Step 6: Processing purchases / Verify Payment**](#step-6-processing-purchases--verify-payment)
+
+[**Step 7: Handling pending transactions**](#step-7-handling-pending-transactions)
+
+<br> Learn More: https://developer.android.com/google/play/billing/integrate
+
+### Step 1: Add the Google Play Billing Library dependency<br>
+```gradle
+//Add the Google Play Billing Library dependency to your app's build.gradle file as shown:
+
+dependencies {
+
+    def billing_version = "5.0.0"
+    implementation "com.android.billingclient:billing:$billing_version"
+    implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
+    implementation 'com.google.guava:guava:24.1-jre'
+    
+}
+```
+
+```xml
+//And Open Manifest File and add this permission
+<uses-permission android:name="com.android.vending.BILLING" />
+
+```
+### Step 2: Initialize a BillingClient with PurchasesUpdatedListener<br>
+
+```java
+  //Initialize a BillingClient with PurchasesUpdatedListener onCreate method
+
+    billingClient = BillingClient.newBuilder(this)
+                .enablePendingPurchases()
+                .setListener(
+                        (billingResult, list) -> {
+                            if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK && list != null) {
+                                for (Purchase purchase : list) {
+                                    handlePurchase(purchase);
+                                }
+                            }
+                        }
+                ).build();
+
+ //start the connection after initializing the billing client
+        establishConnection();
+                
+```
