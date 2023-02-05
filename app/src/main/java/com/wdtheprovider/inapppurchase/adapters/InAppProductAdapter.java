@@ -16,13 +16,13 @@ import com.wdtheprovider.inapppurchase.interfaces.RecycleViewInterface;
 import java.util.List;
 import java.util.Objects;
 
-public class BuyCoinsAdapter extends RecyclerView.Adapter<BuyCoinsAdapter.BuyCoinsViewHolder> {
+public class InAppProductAdapter extends RecyclerView.Adapter<InAppProductAdapter.InAppProductViewHolder> {
 
     List<ProductDetails> productDetailsList;
     Context context;
     RecycleViewInterface recycleViewInterface;
 
-    public BuyCoinsAdapter(Context context, List<ProductDetails> productDetailsList, RecycleViewInterface recycleViewInterface) {
+    public InAppProductAdapter(Context context, List<ProductDetails> productDetailsList, RecycleViewInterface recycleViewInterface) {
         this.productDetailsList = productDetailsList;
         this.context = context;
         this.recycleViewInterface = recycleViewInterface;
@@ -30,16 +30,16 @@ public class BuyCoinsAdapter extends RecyclerView.Adapter<BuyCoinsAdapter.BuyCoi
 
     @NonNull
     @Override
-    public BuyCoinsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public InAppProductViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.buycoins_item,parent,false);
-        return new BuyCoinsViewHolder(view);
+        return new InAppProductViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull BuyCoinsViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull InAppProductViewHolder holder, int position) {
         ProductDetails currentItem = productDetailsList.get(position);
-        holder.txt_coins.setText(currentItem.getName());
-        holder.txt_icon_price.setText(Objects.requireNonNull(currentItem.getOneTimePurchaseOfferDetails()).getFormattedPrice());
+        holder.txt_name.setText(currentItem.getName());
+        holder.txt_price.setText(Objects.requireNonNull(currentItem.getOneTimePurchaseOfferDetails()).getFormattedPrice());
     }
 
     @Override
@@ -47,13 +47,13 @@ public class BuyCoinsAdapter extends RecyclerView.Adapter<BuyCoinsAdapter.BuyCoi
         return productDetailsList.size();
     }
 
-    public class BuyCoinsViewHolder extends RecyclerView.ViewHolder{
-        TextView txt_coins, txt_icon_price;
+    public class InAppProductViewHolder extends RecyclerView.ViewHolder{
+        TextView txt_name, txt_price;
 
-        public BuyCoinsViewHolder(@NonNull View itemView) {
+        public InAppProductViewHolder(@NonNull View itemView) {
             super(itemView);
-            txt_coins = itemView.findViewById(R.id.product_name);
-            txt_icon_price = itemView.findViewById(R.id.product_price);
+            txt_name = itemView.findViewById(R.id.product_name);
+            txt_price = itemView.findViewById(R.id.product_price);
             itemView.setOnClickListener(v -> recycleViewInterface.onItemClick(getAdapterPosition()));
         }
 
