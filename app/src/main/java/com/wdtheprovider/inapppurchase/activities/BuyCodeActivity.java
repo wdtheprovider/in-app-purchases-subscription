@@ -34,7 +34,6 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 import com.google.android.material.snackbar.Snackbar;
 import com.google.common.collect.ImmutableList;
 import com.wdtheprovider.inapppurchase.R;
-import com.wdtheprovider.inapppurchase.adapters.BuyCodeAdapter;
 import com.wdtheprovider.inapppurchase.interfaces.RecycleViewInterface;
 import com.wdtheprovider.inapppurchase.utilies.Prefs;
 
