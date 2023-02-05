@@ -6,15 +6,6 @@ plugins {
 android {
     compileSdk 32
 
-    signingConfigs {
-        releaseSigningConfig {
-            storeFile rootProject.file("app/none")
-            storePassword System.getProperty("WD@sabie076966")
-            keyAlias System.getProperty("In App Purchase")
-            keyPassword System.getProperty("WD@sabie076966")
-        }
-    }
-
     defaultConfig {
         applicationId "com.wdtheprovider.inapppurchase"
         minSdk 23
@@ -28,7 +19,6 @@ android {
     buildTypes {
         release {
             minifyEnabled false
-            signingConfig signingConfigs.releaseSigningConfig
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
