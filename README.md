@@ -322,6 +322,48 @@ void checkSubscription(){
  
 ```
 
+### Upgrade and downgrade function (Optional) <br>
+
+
+```java
+
+void upgradeOrDowngrade(String dynamicProductId) {
+
+        Log.d("TestUpgrade", "The product list Size " + productDetailsList.size());
+        Log.d("TestUpgrade", "The product list Details " + productDetailsList.toString());
+
+        for (ProductDetails newProdDetails : productDetailsList) {
+
+            if (newProdDetails.getProductId().equals(dynamicProductId)) {
+
+                assert newProdDetails
+                        .getSubscriptionOfferDetails() != null;
+
+                String offerToken = newProdDetails.getSubscriptionOfferDetails().get(0).getOfferToken();
+
+                BillingFlowParams billingFlowParams = BillingFlowParams.newBuilder()
+                        .setProductDetailsParamsList(
+                                ImmutableList.of(
+                                        BillingFlowParams.ProductDetailsParams.newBuilder()
+                                                .setProductDetails(newProdDetails)
+                                                .setOfferToken(offerToken)
+                                                .build()))
+                        .setSubscriptionUpdateParams(
+                                BillingFlowParams.SubscriptionUpdateParams.newBuilder()
+                                        .setOldPurchaseToken(prefs.getString("purchasedToken", ""))
+                                        .setReplaceProrationMode(BillingFlowParams.ProrationMode.IMMEDIATE_AND_CHARGE_FULL_PRICE)
+                                        .build())
+                        .build();
+
+                //Opening the Billing flow
+                billingClient.launchBillingFlow(activity, billingFlowParams);
+            }
+        }
+    }
+
+    
+```
+
 
 
 

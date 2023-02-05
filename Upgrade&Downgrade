@@ -1,0 +1,59 @@
+# Welcome to in-app-purchase - Upgrade and Downgrade of subsripitions (Android Studio Java*)
+
+In this ReadMe file i will explain and host codes for upgrading and dowgrading subscriptions In App Purchases.
+
+Pre-requisite
+- Subscription implemented fully with more than one subscription - check the main ReadMe file.
+- Published App on Play Store
+- Tester Device with GMS
+
+Configure Your Testing device by adding the gmail account to internal testing testers 
+and License testing (Watch the YouTube video for clarity: https://youtu.be/j6wWVMj-fi8 )
+
+
+The following methods (These are the methods you need for the IAP System to work, you can copy and paste)
+
+```java
+void upgradeOrDowngrade(){}
+```
+
+### Step 1: upgradeOrDowngrade Method<br>
+
+```java
+  
+ void upgradeOrDowngrade(String dynamicProductId) {
+
+        Log.d("TestUpgrade", "The product list Size " + productDetailsList.size());
+        Log.d("TestUpgrade", "The product list Details " + productDetailsList.toString());
+
+        for (ProductDetails newProdDetails : productDetailsList) {
+
+            if (newProdDetails.getProductId().equals(dynamicProductId)) {
+
+                assert newProdDetails
+                        .getSubscriptionOfferDetails() != null;
+
+                String offerToken = newProdDetails.getSubscriptionOfferDetails().get(0).getOfferToken();
+
+                BillingFlowParams billingFlowParams = BillingFlowParams.newBuilder()
+                        .setProductDetailsParamsList(
+                                ImmutableList.of(
+                                        BillingFlowParams.ProductDetailsParams.newBuilder()
+                                                .setProductDetails(newProdDetails)
+                                                .setOfferToken(offerToken)
+                                                .build()))
+                        .setSubscriptionUpdateParams(
+                                BillingFlowParams.SubscriptionUpdateParams.newBuilder()
+                                        .setOldPurchaseToken(prefs.getString("purchasedToken", ""))
+                                        .setReplaceProrationMode(BillingFlowParams.ProrationMode.IMMEDIATE_AND_CHARGE_FULL_PRICE)
+                                        .build())
+                        .build();
+
+                //Opening the Billing flow
+                billingClient.launchBillingFlow(activity, billingFlowParams);
+            }
+        }
+    }
+
+                
+```
