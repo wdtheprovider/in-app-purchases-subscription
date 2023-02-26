@@ -2,19 +2,20 @@ package com.wdtheprovider.inapppurchase.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.android.billingclient.api.AcknowledgePurchaseParams;
 import com.android.billingclient.api.BillingClient;
@@ -25,44 +26,48 @@ import com.android.billingclient.api.ProductDetails;
 import com.android.billingclient.api.Purchase;
 import com.android.billingclient.api.QueryProductDetailsParams;
 import com.android.billingclient.api.QueryPurchasesParams;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.LoadAdError;
-import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.interstitial.InterstitialAd;
-import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
+import com.google.android.gms.ads.identifier.AdvertisingIdClient;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.common.collect.ImmutableList;
 import com.wdtheprovider.inapppurchase.R;
+import com.facebook.ads.*;
 import com.wdtheprovider.inapppurchase.adapters.RemoveAdsAdapter;
-import com.wdtheprovider.inapppurchase.interfaces.RecycleViewInterface;
 import com.wdtheprovider.inapppurchase.utilies.Prefs;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RemoveAdsActivity extends AppCompatActivity implements RecycleViewInterface {
-
+public class FacebookRemoveAdsActivity extends AppCompatActivity {
+    private AdView adView;
+    CardView mainCard;
+    BillingClient billingClient;
     Activity activity;
-    Prefs prefs;
-    private BillingClient billingClient;
     List<ProductDetails> productDetailsList;
-    ProgressBar loadProducts;
-    RecyclerView recyclerView;
-    Toolbar toolbar;
+    Prefs prefs;
     Handler handler;
-    ExtendedFloatingActionButton btn_restore_fab;
-    RemoveAdsAdapter adapter;
-    AdView mAdView;
-    AdRequest adRequest;
+    ProgressBar loadingProducts;
+    TextView product;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_remove_ads);
+        setContentView(R.layout.activity_facebook_remove_ads);
 
-        initViews();
+        mainCard = findViewById(R.id.mainCard);
+        loadingProducts = findViewById(R.id.loadingProducts);
+        product = findViewById(R.id.product);
+
+        activity = this;
+        productDetailsList = new ArrayList<>();
+        prefs = new Prefs(this);
+        handler =  new Handler();
+
+        if(!prefs.getBoolean("fb_remove_ads",false)){
+            fbBannerAd();
+            getAAID();
+        }
 
         //Initialize a BillingClient with PurchasesUpdatedListener onCreate method
         billingClient = BillingClient.newBuilder(this)
@@ -71,7 +76,7 @@ public class RemoveAdsActivity extends AppCompatActivity implements RecycleViewI
                         (billingResult, list) -> {
                             if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK && list != null) {
                                 for (Purchase purchase : list) {
-                                    handlePurchase(purchase);
+                                    verifyPurchase(purchase);
                                 }
                             }
                         }
@@ -80,32 +85,11 @@ public class RemoveAdsActivity extends AppCompatActivity implements RecycleViewI
         //start the connection after initializing the billing client
         establishConnection();
 
-        //restore purchases
-        btn_restore_fab.setOnClickListener(v -> {
-            restorePurchases();
+        //Open PurchaseFlow
+        mainCard.setOnClickListener(v->{
+            launchPurchaseFlow(productDetailsList.get(0));
         });
-
-        //Checks if the user has a removeAd if not then show ads.
-        //Checks if the user has a premium/subscription if not then show ads.
-        if (prefs.getPremium() == 0) {
-            if (!prefs.isRemoveAd()) {
-                MobileAds.initialize(this, initializationStatus -> {
-                });
-                adRequest = new AdRequest.Builder().build();
-                loadBannerAd();
-                Log.d("RemoveAds", "Remove ads off");
-            } else {
-                Log.d("RemoveAds", "Remove ads On");
-                mAdView.setVisibility(View.GONE);
-            }
-        }
-
     }
-
-    void loadBannerAd() {
-        mAdView.loadAd(adRequest);
-    }
-
     void establishConnection() {
 
         billingClient.startConnection(new BillingClientStateListener() {
@@ -131,7 +115,7 @@ public class RemoveAdsActivity extends AppCompatActivity implements RecycleViewI
         ImmutableList<QueryProductDetailsParams.Product> productList = ImmutableList.of(
                 //Product 1
                 QueryProductDetailsParams.Product.newBuilder()
-                        .setProductId("test_remove_ads1")
+                        .setProductId("fb_remove_ads_lifetime")
                         .setProductType(BillingClient.ProductType.INAPP)
                         .build()
         );
@@ -146,17 +130,24 @@ public class RemoveAdsActivity extends AppCompatActivity implements RecycleViewI
                     // Process the result
                     productDetailsList.clear();
                     handler.postDelayed(() -> {
-                        loadProducts.setVisibility(View.INVISIBLE);
+                        loadingProducts.setVisibility(View.INVISIBLE);
+                        mainCard.setVisibility(View.VISIBLE);
                         productDetailsList.addAll(prodDetailsList);
-                        adapter = new RemoveAdsAdapter(getApplicationContext(), productDetailsList, RemoveAdsActivity.this);
-                        recyclerView.setHasFixedSize(true);
-                        recyclerView.setLayoutManager(new LinearLayoutManager(RemoveAdsActivity.this, LinearLayoutManager.VERTICAL, false));
-                        recyclerView.setAdapter(adapter);
+
+                        //Set the product details on the screen.
+                            String price = productDetailsList.get(0).getOneTimePurchaseOfferDetails().getFormattedPrice();
+                            String productName = productDetailsList.get(0).getName();
+
+                       if(prefs.getBoolean("fb_remove_ads",false)){
+                           product.setText("Product Purchased");
+                       }else {
+                           product.setText(price + " "+ productName);
+                       }
+
                     }, 2000);
 
                 }
         );
-
     }
 
     void launchPurchaseFlow(ProductDetails productDetails) {
@@ -173,7 +164,7 @@ public class RemoveAdsActivity extends AppCompatActivity implements RecycleViewI
         billingClient.launchBillingFlow(activity, billingFlowParams);
     }
 
-    void handlePurchase(Purchase purchases) {
+    void verifyPurchase(Purchase purchases) {
         if (!purchases.isAcknowledged()) {
             billingClient.acknowledgePurchase(AcknowledgePurchaseParams
                     .newBuilder()
@@ -181,10 +172,11 @@ public class RemoveAdsActivity extends AppCompatActivity implements RecycleViewI
                     .build(), billingResult -> {
 
                 if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
-                    //Setting setIsRemoveAd to true
+                    //Setting setBoolean to true
+                    // key  - fb_remove_ads
                     // true - No ads
                     // false - showing ads.
-                    prefs.setIsRemoveAd(true);
+                    prefs.setBoolean("fb_remove_ads",true);
                     reloadScreen();
                 }
             });
@@ -207,7 +199,7 @@ public class RemoveAdsActivity extends AppCompatActivity implements RecycleViewI
                     if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
                         for (Purchase purchase : list) {
                             if (purchase.getPurchaseState() == Purchase.PurchaseState.PURCHASED && !purchase.isAcknowledged()) {
-                                handlePurchase(purchase);
+                                verifyPurchase(purchase);
                             }
                         }
                     }
@@ -215,48 +207,32 @@ public class RemoveAdsActivity extends AppCompatActivity implements RecycleViewI
         );
     }
 
-    void restorePurchases() {
-        billingClient = BillingClient.newBuilder(this).enablePendingPurchases().setListener((billingResult, list) -> {
-        }).build();
-        final BillingClient finalBillingClient = billingClient;
-        billingClient.startConnection(new BillingClientStateListener() {
-            @Override
-            public void onBillingServiceDisconnected() {
-                establishConnection();
-            }
+    public void getAAID(){
+        AsyncTask.execute(() -> {
+            try {
+                AdvertisingIdClient.Info adInfo = AdvertisingIdClient.getAdvertisingIdInfo(FacebookRemoveAdsActivity.this);
+                String myId = adInfo != null ? adInfo.getId() : null;
 
-            @Override
-            public void onBillingSetupFinished(@NonNull BillingResult billingResult) {
-                if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
-                    finalBillingClient.queryPurchasesAsync(
-                            QueryPurchasesParams.newBuilder().setProductType(BillingClient.ProductType.INAPP).build(), (billingResult1, list) -> {
-                                if (billingResult1.getResponseCode() == BillingClient.BillingResponseCode.OK) {
-                                    if (list.size() > 0) {
-                                        prefs.setIsRemoveAd(true); // set true to activate remove ad feature
-                                        showSnackbar(btn_restore_fab, "Successfully restored");
-                                    } else {
-                                        showSnackbar(btn_restore_fab, "Oops, No purchase found.");
-                                        prefs.setIsRemoveAd(false); // set false to de-activate remove ad feature
-                                    }
-                                }
-                            });
-                }
+                Log.d("UIDMY",myId);
+            } catch (Exception e) {
+                Log.d("error", e.getMessage());
             }
         });
     }
 
-    private void initViews() {
+    void fbBannerAd() {
 
-        activity = this;
-        handler = new Handler();
-        prefs = new Prefs(this);
-        productDetailsList = new ArrayList<>();
-        toolbar = findViewById(R.id.toolbar);
-        recyclerView = findViewById(R.id.recyclerview);
-        mAdView = findViewById(R.id.adView);
-        btn_restore_fab = findViewById(R.id.fab);
-        loadProducts = findViewById(R.id.loadProducts);
+        AudienceNetworkAds.initialize(FacebookRemoveAdsActivity.this);
+        //Do this only if you are using google android emulators, real phones its not needed.
+        //The hash ID, will come the first time you load the app and request the ad.
+        AdSettings.setTestMode(true);
+        AdSettings.addTestDevice("184d46d7-c142-4729-b40c-ed9b32509c47");
+        AdSettings.turnOnSDKDebugger(this);
 
+        adView = new AdView(this, "563838032361652_563841815694607", AdSize.BANNER_HEIGHT_50);
+        LinearLayout adContainer = (LinearLayout) findViewById(R.id.banner_container);
+        adContainer.addView(adView);
+        adView.loadAd();
     }
 
     @Override
@@ -266,12 +242,11 @@ public class RemoveAdsActivity extends AppCompatActivity implements RecycleViewI
         finish();
     }
 
-    public void showSnackbar(View view, String message) {
-        Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show();
-    }
-
     @Override
-    public void onItemClick(int pos) {
-        launchPurchaseFlow(productDetailsList.get(pos));
+    protected void onDestroy() {
+        if (adView != null) {
+            adView.destroy();
+        }
+        super.onDestroy();
     }
 }

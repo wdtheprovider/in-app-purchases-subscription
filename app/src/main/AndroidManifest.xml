@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.wdtheprovider.inapppurchase" >
+    package="com.wdtheprovider.inapppurchase">
 
     <uses-permission android:name="com.android.vending.BILLING" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -13,7 +13,10 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Sharcourse" >
+        android:theme="@style/Theme.Sharcourse">
+        <activity
+            android:name=".activities.FacebookRemoveAdsActivity"
+            android:exported="false" />
         <activity
             android:name=".activities.InAppPurchaseActivity"
             android:exported="false" />
@@ -34,7 +37,7 @@
             android:exported="true" />
         <activity
             android:name=".activities.SplashActivity"
-            android:exported="true" >
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

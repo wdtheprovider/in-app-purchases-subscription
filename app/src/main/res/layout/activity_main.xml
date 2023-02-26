@@ -73,11 +73,51 @@
                 android:textColor="@color/white" />
         </LinearLayout>
 
+
+    <LinearLayout
+        android:id="@+id/facebook_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/subscriptions_group"
+        android:orientation="horizontal"
+        android:padding="10dp"
+        android:weightSum="2">
+
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="2"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/fb_onOff"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/on"
+                android:textColor="@color/white" />
+
+            <Button
+                android:id="@+id/btn_fb_remove_ads"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:text="Facebook Remove Ads"
+                android:textColor="@color/white"
+                tools:ignore="NestedWeights" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+
     <LinearLayout
         android:id="@+id/container_2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/subscriptions_group"
+        android:layout_below="@id/facebook_container"
         android:orientation="horizontal"
         android:padding="10dp"
         android:weightSum="2">

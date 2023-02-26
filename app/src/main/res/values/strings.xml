@@ -22,9 +22,9 @@
     <string name="buy_coins">Buy Coins</string>
     <string name="_20_remaining_coins">20 Remaining Coins</string>
     <string name="on">ON</string>
-    <string name="remove_ads">Remove Ads</string>
+    <string name="remove_ads">Admob Remove Ads</string>
     <string name="non_consumable">Non - Consumable</string>
-    <string name="removed_ads">Removed Ads</string>
+    <string name="removed_ads">Lifetime Removed Ads</string>
     <string name="all_features">All Features</string>
     <string name="price_and_duration">Price and duration</string>
     <string name="r20">R20</string>

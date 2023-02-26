@@ -3,6 +3,7 @@ package com.wdtheprovider.inapppurchase.activities;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.media.FaceDetector;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -32,9 +33,9 @@ import com.wdtheprovider.inapppurchase.R;
 import com.wdtheprovider.inapppurchase.utilies.Prefs;
 
 public class MainActivity extends AppCompatActivity {
-    Button btn_subscribe, btn_buy_coins, btn_remove_ads,btn_buy_source_code,btn_show_interstitial,btn_combined;
+    Button btn_subscribe, btn_buy_coins, btn_remove_ads,btn_fb_remove_ads,btn_buy_source_code,btn_show_interstitial,btn_combined;
     Prefs prefs;
-    TextView txt_subscribed, coins, onOff, about, privacy;
+    TextView txt_subscribed, coins, onOff, fb_onOff, about, privacy;
     Toolbar toolbar;
     ProgressBar progress_circular;
     AdView mAdView;
@@ -75,8 +76,11 @@ public class MainActivity extends AppCompatActivity {
             onOff.setText("OFF");
         }
 
-        AppCenter.start(getApplication(), "82a79f36-b2ca-4a67-a1a7-5b6aef089d44",
-                Analytics.class, Crashes.class);
+        if (prefs.getBoolean("fb_remove_ads",false)) {
+            fb_onOff.setText("ON");
+        } else {
+            fb_onOff.setText("OFF");
+        }
 
         coins.setText(prefs.getInt("coins", 0) + " Remaining coins");
 
@@ -110,6 +114,16 @@ public class MainActivity extends AppCompatActivity {
                 increment();
             }
             startActivity(new Intent(this, RemoveAdsActivity.class));
+            finish();
+        });
+
+        btn_fb_remove_ads.setOnClickListener(view -> {
+            if(prefs.getInt("isCount",0) == 3){
+                showInterstitial();
+            }else {
+                increment();
+            }
+            startActivity(new Intent(this, FacebookRemoveAdsActivity.class));
             finish();
         });
 
@@ -167,8 +181,10 @@ public class MainActivity extends AppCompatActivity {
         txt_subscribed = findViewById(R.id.txt_subscribed);
         btn_buy_coins = findViewById(R.id.btn_buy_coins);
         btn_remove_ads = findViewById(R.id.btn_remove_ads);
+        btn_fb_remove_ads = findViewById(R.id.btn_fb_remove_ads);
         btn_buy_source_code = findViewById(R.id.btn_buy_source_code);
         onOff = findViewById(R.id.OnOff);
+        fb_onOff = findViewById(R.id.fb_onOff);
         coins = findViewById(R.id.coins);
         about = findViewById(R.id.about);
         progress_circular = findViewById(R.id.progress_circular);
@@ -209,8 +225,6 @@ public class MainActivity extends AppCompatActivity {
             i.setData(Uri.parse(url));
             startActivity(i);
         });
-
-
     }
 
     void loadBannerAd() {
