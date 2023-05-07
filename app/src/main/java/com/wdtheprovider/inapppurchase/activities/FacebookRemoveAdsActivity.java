@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.billingclient.api.AcknowledgePurchaseParams;
 import com.android.billingclient.api.BillingClient;
@@ -29,15 +30,19 @@ import com.android.billingclient.api.QueryPurchasesParams;
 import com.google.android.gms.ads.identifier.AdvertisingIdClient;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.common.collect.ImmutableList;
 import com.wdtheprovider.inapppurchase.R;
 import com.facebook.ads.*;
 import com.wdtheprovider.inapppurchase.adapters.RemoveAdsAdapter;
+import com.wdtheprovider.inapppurchase.utilies.Helper;
 import com.wdtheprovider.inapppurchase.utilies.Prefs;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class FacebookRemoveAdsActivity extends AppCompatActivity {
     private AdView adView;
@@ -49,6 +54,7 @@ public class FacebookRemoveAdsActivity extends AppCompatActivity {
     Handler handler;
     ProgressBar loadingProducts;
     TextView product;
+    ExtendedFloatingActionButton fab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,18 +62,23 @@ public class FacebookRemoveAdsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_facebook_remove_ads);
 
         mainCard = findViewById(R.id.mainCard);
+        fab = findViewById(R.id.fab);
         loadingProducts = findViewById(R.id.loadingProducts);
         product = findViewById(R.id.product);
 
         activity = this;
         productDetailsList = new ArrayList<>();
         prefs = new Prefs(this);
-        handler =  new Handler();
+        handler = new Handler();
 
-        if(!prefs.getBoolean("fb_remove_ads",false)){
+        if (!prefs.getBoolean("fb_remove_ads", false)) {
             fbBannerAd();
             getAAID();
         }
+
+        fab.setOnClickListener(v -> {
+            restorePurchases();
+        });
 
         //Initialize a BillingClient with PurchasesUpdatedListener onCreate method
         billingClient = BillingClient.newBuilder(this)
@@ -86,10 +97,11 @@ public class FacebookRemoveAdsActivity extends AppCompatActivity {
         establishConnection();
 
         //Open PurchaseFlow
-        mainCard.setOnClickListener(v->{
+        mainCard.setOnClickListener(v -> {
             launchPurchaseFlow(productDetailsList.get(0));
         });
     }
+
     void establishConnection() {
 
         billingClient.startConnection(new BillingClientStateListener() {
@@ -130,22 +142,22 @@ public class FacebookRemoveAdsActivity extends AppCompatActivity {
                     // Process the result
                     productDetailsList.clear();
                     handler.postDelayed(() -> {
-                        loadingProducts.setVisibility(View.INVISIBLE);
-                        mainCard.setVisibility(View.VISIBLE);
                         productDetailsList.addAll(prodDetailsList);
-
-                        //Set the product details on the screen.
-                            String price = productDetailsList.get(0).getOneTimePurchaseOfferDetails().getFormattedPrice();
+                        if (!productDetailsList.isEmpty()) {
+                            loadingProducts.setVisibility(View.INVISIBLE);
+                            mainCard.setVisibility(View.VISIBLE);
+                            //Set the product details on the screen.
+                            String price = Objects.requireNonNull(productDetailsList.get(0).getOneTimePurchaseOfferDetails()).getFormattedPrice();
                             String productName = productDetailsList.get(0).getName();
-
-                       if(prefs.getBoolean("fb_remove_ads",false)){
-                           product.setText("Product Purchased");
-                       }else {
-                           product.setText(price + " "+ productName);
-                       }
-
+                            if (prefs.getBoolean("fb_remove_ads", false)) {
+                                product.setText("Product Purchased");
+                            } else {
+                                product.setText(price + " " + productName);
+                            }
+                        } else {
+                            Toast.makeText(activity, "No products available", Toast.LENGTH_SHORT).show();
+                        }
                     }, 2000);
-
                 }
         );
     }
@@ -176,7 +188,7 @@ public class FacebookRemoveAdsActivity extends AppCompatActivity {
                     // key  - fb_remove_ads
                     // true - No ads
                     // false - showing ads.
-                    prefs.setBoolean("fb_remove_ads",true);
+                    prefs.setBoolean("fb_remove_ads", true);
                     reloadScreen();
                 }
             });
@@ -207,13 +219,13 @@ public class FacebookRemoveAdsActivity extends AppCompatActivity {
         );
     }
 
-    public void getAAID(){
+    public void getAAID() {
         AsyncTask.execute(() -> {
             try {
                 AdvertisingIdClient.Info adInfo = AdvertisingIdClient.getAdvertisingIdInfo(FacebookRemoveAdsActivity.this);
-                String myId = adInfo != null ? adInfo.getId() : null;
+                String myId = adInfo.getId();
 
-                Log.d("UIDMY",myId);
+                Log.d("UIDMY", myId);
             } catch (Exception e) {
                 Log.d("error", e.getMessage());
             }
@@ -248,5 +260,45 @@ public class FacebookRemoveAdsActivity extends AppCompatActivity {
             adView.destroy();
         }
         super.onDestroy();
+    }
+
+
+    void restorePurchases() {
+
+        billingClient = BillingClient.newBuilder(this)
+                .enablePendingPurchases()
+                .setListener((billingResult, list) -> {
+                }).build();
+
+        final BillingClient finalBillingClient = billingClient;
+        billingClient.startConnection(new BillingClientStateListener() {
+            @Override
+            public void onBillingServiceDisconnected() {
+            }
+
+            @Override
+            public void onBillingSetupFinished(@NonNull BillingResult billingResult) {
+
+                if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
+                    finalBillingClient.queryPurchasesAsync(
+                            QueryPurchasesParams.newBuilder().setProductType(BillingClient.ProductType.SUBS).build(), (billingResult1, list) -> {
+                                if (billingResult1.getResponseCode() == BillingClient.BillingResponseCode.OK) {
+                                    if (list.size() > 0) {
+                                        for (Purchase purchase : list) {
+                                            if (purchase.getProducts().equals("fb_remove_ads_lifetime")) {
+                                                Helper.showSnackBar(fab, "Successfully restored");
+                                                prefs.setBoolean("fb_remove_ads", true);
+                                            }
+                                        }
+                                    } else {
+                                        Helper.showSnackBar(fab, "Oops, No purchase found");
+                                        prefs.setBoolean("fb_remove_ads", false);
+                                        // set 0 to de-activate premium feature
+                                    }
+                                }
+                            });
+                }
+            }
+        });
     }
 }

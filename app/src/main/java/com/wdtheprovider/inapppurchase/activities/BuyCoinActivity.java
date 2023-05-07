@@ -30,6 +30,7 @@ import com.android.billingclient.api.QueryPurchasesParams;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.collect.ImmutableList;
 import com.wdtheprovider.inapppurchase.adapters.BuyCoinsAdapter;
+import com.wdtheprovider.inapppurchase.helpers.FirebaseFunctions;
 import com.wdtheprovider.inapppurchase.interfaces.RecycleViewInterface;
 import com.wdtheprovider.inapppurchase.utilies.Prefs;
 import com.wdtheprovider.inapppurchase.R;
@@ -53,20 +54,25 @@ public class BuyCoinActivity extends AppCompatActivity implements RecycleViewInt
     ArrayList<Integer> coins;
     ArrayList<String> productIds;
 
+    FirebaseFunctions firebaseFunctions;
+
     @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_buy_coin);
 
+        firebaseFunctions = new FirebaseFunctions(this);
+
         initViews();
+
 
         billingClient = BillingClient.newBuilder(this)
                 .enablePendingPurchases()
                 .setListener(
                         (billingResult, list) -> {
-                            if(billingResult.getResponseCode()==BillingClient.BillingResponseCode.OK && list !=null) {
-                                for (Purchase purchase: list){
+                            if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK && list != null) {
+                                for (Purchase purchase : list) {
                                     verifyPurchase(purchase);
                                 }
                             }
@@ -77,14 +83,16 @@ public class BuyCoinActivity extends AppCompatActivity implements RecycleViewInt
         connectGooglePlayBilling();
 
         btn_use_coins.setOnClickListener(v -> {
-            if(prefs.getInt("coins", 0)>0) {
+            if (prefs.getInt("coins", 0) > 0) {
                 //get the current saved coins in the sharePrefs - prefs.getInt("coins",0)
                 // and minus - 1 then setInt() - like updating the coins
                 prefs.setInt("coins", prefs.getInt("coins", 0) - 1);
                 //setText to the UI
                 txt_coins.setText(prefs.getInt("coins", 0) + " Coin(s)");
-            }else{
-                showSnackBar(btn_use_coins,"Ran out of coins, please recharge.");
+
+                firebaseFunctions.updateCoins(this, prefs.getString("uid", ""), prefs.getInt("coins", 0));
+            } else {
+                showSnackBar(btn_use_coins, "Ran out of coins, please recharge.");
             }
         });
     }
@@ -106,7 +114,6 @@ public class BuyCoinActivity extends AppCompatActivity implements RecycleViewInt
     }
 
     @SuppressLint("SetTextI18n")
-
     void showProducts() {
 
         ImmutableList<QueryProductDetailsParams.Product> productList = ImmutableList.of(
@@ -134,6 +141,7 @@ public class BuyCoinActivity extends AppCompatActivity implements RecycleViewInt
                 .build();
 
         billingClient.queryProductDetailsAsync(params, (billingResult, list) -> {
+            Log.d("ProDuct8", list.toString());
             productDetailsList.clear();
             handler.postDelayed(() -> {
                 loadProducts.setVisibility(View.INVISIBLE); //
@@ -158,11 +166,11 @@ public class BuyCoinActivity extends AppCompatActivity implements RecycleViewInt
                 .setProductDetailsParamsList(productDetailsParamsList)
                 .build();
 
-         billingClient.launchBillingFlow(activity, billingFlowParams);
+        billingClient.launchBillingFlow(activity, billingFlowParams);
     }
 
     void verifyPurchase(Purchase purchase) {
-        Log.d("testCoins","Verify Purchase " + purchase.toString());
+        Log.d("testCoins", "Verify Purchase " + purchase.toString());
         ConsumeParams consumeParams = ConsumeParams.newBuilder()
                 .setPurchaseToken(purchase.getPurchaseToken())
                 .build();
@@ -193,7 +201,7 @@ public class BuyCoinActivity extends AppCompatActivity implements RecycleViewInt
 
         productDetailsList = new ArrayList<>();
 
-        txt_coins.setText(prefs.getInt("coins",0)+ " Coin(s)");
+        txt_coins.setText(prefs.getInt("coins", 0) + " Coin(s)");
 
         productIds = new ArrayList<>();
         coins = new ArrayList<>();
@@ -207,20 +215,24 @@ public class BuyCoinActivity extends AppCompatActivity implements RecycleViewInt
 
     @SuppressLint("SetTextI18n")
     void giveUserCoins(Purchase purchase) {
-        for(int i=0;i<productIds.size();i++){
-            if(purchase.getProducts().get(0).equals(productIds.get(i))){
+        for (int i = 0; i < productIds.size(); i++) {
+            if (purchase.getProducts().get(0).equals(productIds.get(i))) {
                 //set coins
                 int boughtCoins = coins.get(i) * purchase.getQuantity();
-                int myCoins = prefs.getInt("coins",0);
+                int myCoins = prefs.getInt("coins", 0);
                 int finalCoins = myCoins + boughtCoins;
 
-                Log.d("testCoins","bought Coins: " + boughtCoins);
-                Log.d("testCoins","My Coins: " + myCoins);
-                Log.d("testCoins","Final Coins: " + finalCoins);
+                Log.d("testCoins", "bought Coins: " + boughtCoins);
+                Log.d("testCoins", "My Coins: " + myCoins);
+                Log.d("testCoins", "Final Coins: " + finalCoins);
 
                 prefs.setInt("coins", finalCoins);
                 //Update UI
-                txt_coins.setText(prefs.getInt("coins",0)+" Coin(s)");
+                txt_coins.setText(prefs.getInt("coins", 0) + " Coin(s)");
+
+                firebaseFunctions.updateCoins(this, prefs.getString("uid", ""), finalCoins);
+
+                reloadScreen();
             }
         }
     }
@@ -252,16 +264,16 @@ public class BuyCoinActivity extends AppCompatActivity implements RecycleViewInt
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        startActivity(new Intent(activity,MainActivity.class));
+        startActivity(new Intent(activity, MainActivity.class));
         finish();
     }
+
     @Override
     public void onItemClick(int pos) {
         launchPurchaseFlow(productDetailsList.get(pos));
     }
 
-    public void showSnackBar(View view, String message)
-    {
+    public void showSnackBar(View view, String message) {
         Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show();
     }
 }

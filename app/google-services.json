@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "541792402684",
+    "firebase_url": "https://demos-f7561-default-rtdb.firebaseio.com",
     "project_id": "demos-f7561",
     "storage_bucket": "demos-f7561.appspot.com"
   },
@@ -14,7 +15,7 @@
       },
       "oauth_client": [
         {
-          "client_id": "541792402684-kbemlft03rdp2aiemda8itbhnil73irb.apps.googleusercontent.com",
+          "client_id": "541792402684-dsrs35th52ehlssml17n9cpnbpmvh6oe.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -27,7 +28,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "541792402684-kbemlft03rdp2aiemda8itbhnil73irb.apps.googleusercontent.com",
+              "client_id": "541792402684-dsrs35th52ehlssml17n9cpnbpmvh6oe.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
