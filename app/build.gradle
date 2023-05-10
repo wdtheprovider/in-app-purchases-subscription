@@ -56,12 +56,12 @@ dependencies {
 
     implementation platform('com.google.firebase:firebase-bom:31.0.1')
     implementation 'com.google.firebase:firebase-config'
+
+    //add this for accounts and realtime database
     implementation 'com.google.firebase:firebase-auth'
     implementation 'com.google.firebase:firebase-database'
     // Also add the dependency for the Google Play services library and specify its version
     implementation 'com.google.android.gms:play-services-auth:20.5.0'
-
-
 
     implementation 'com.facebook.android:audience-network-sdk:6.12.0'
 

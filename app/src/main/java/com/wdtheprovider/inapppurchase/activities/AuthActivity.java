@@ -73,7 +73,6 @@ public class AuthActivity extends AppCompatActivity {
         });
 
         loadAccount.setVisibility(View.GONE);
-
         btnSubmit.setOnClickListener(v -> {
             if (email.getText().toString().isEmpty()) {
                 Toast.makeText(AuthActivity.this, "Email cannot be empty.", Toast.LENGTH_SHORT).show();
@@ -99,6 +98,8 @@ public class AuthActivity extends AppCompatActivity {
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                     // This method is called once with the initial value and again
                                     // whenever data at this location is updated.
+                                    /// Users
+                                    ///    uid : hjkhgkjhkjhkhkh
                                     User value = dataSnapshot.child(loggedUser.getUid()).getValue(User.class);
 
                                     assert value != null;
@@ -129,14 +130,16 @@ public class AuthActivity extends AppCompatActivity {
                             FirebaseUser user = firebaseFunctions.mAuth.getCurrentUser();
                             assert user != null;
                             userToAdd.setId(user.getUid());
-                            userToAdd.setCoins(0);
+                            userToAdd.setCoins(15);
                             userToAdd.setSubscribed(false);
 
                             //Adding record to realtime database
+                            // Users
+                            //   uid: bjhgjhkhj
                             firebaseFunctions.databaseReference.child(user.getUid()).setValue(userToAdd).addOnCompleteListener(task1 -> {
                                 if (task1.isSuccessful()) {
                                     prefs.setString("uid", user.getUid());
-                                    prefs.setInt("coins", 0);
+                                    prefs.setInt("coins", 15);
                                     prefs.setBoolean("subscribe", false);
                                     loadAccount.setVisibility(View.GONE);
                                     Toast.makeText(this, "Account added.", Toast.LENGTH_SHORT).show();

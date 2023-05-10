@@ -32,6 +32,7 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.collect.ImmutableList;
 import com.wdtheprovider.inapppurchase.adapters.SubscriptionAdapter;
+import com.wdtheprovider.inapppurchase.helpers.FirebaseFunctions;
 import com.wdtheprovider.inapppurchase.interfaces.RecycleViewInterface;
 import com.wdtheprovider.inapppurchase.utilies.Prefs;
 import com.wdtheprovider.inapppurchase.R;
@@ -53,8 +54,7 @@ public class SubscriptionActivity extends AppCompatActivity implements RecycleVi
     TextView manageSub, restoreSub;
     Button btnDismiss;
 
-    List<ProductDetails> productDetails = new ArrayList<>();
-
+    FirebaseFunctions firebaseFunctions;
 
     private void initViews() {
         manageSub = findViewById(R.id.manageSub);
@@ -68,6 +68,7 @@ public class SubscriptionActivity extends AppCompatActivity implements RecycleVi
 
         productIds.add(0, "test_sub_weekly1");
         productIds.add(1, "test_sub_monthly1");
+
     }
 
     @Override
@@ -80,6 +81,8 @@ public class SubscriptionActivity extends AppCompatActivity implements RecycleVi
 
         activity = this;
         prefs = new Prefs(this);
+
+        firebaseFunctions = new FirebaseFunctions(this);
 
         billingClient = BillingClient.newBuilder(this)
                 .enablePendingPurchases()
@@ -220,6 +223,8 @@ public class SubscriptionActivity extends AppCompatActivity implements RecycleVi
                 // 1 - premium
                 // 0 - no premium
                 prefs.setPremium(1);
+
+                firebaseFunctions.updateSubscribed(prefs.getString("uid",""),true );
 
                 //Optional but i will explain.
                 for (int i = 0; i < productIds.size(); i++) {

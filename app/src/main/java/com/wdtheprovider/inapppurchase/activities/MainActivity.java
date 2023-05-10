@@ -26,6 +26,9 @@ import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.microsoft.appcenter.AppCenter;
@@ -34,6 +37,7 @@ import com.microsoft.appcenter.crashes.Crashes;
 import com.onesignal.OneSignal;
 import com.wdtheprovider.inapppurchase.R;
 import com.wdtheprovider.inapppurchase.helpers.FirebaseFunctions;
+import com.wdtheprovider.inapppurchase.models.User;
 import com.wdtheprovider.inapppurchase.utilies.Prefs;
 
 import java.util.Objects;
@@ -74,6 +78,28 @@ public class MainActivity extends AppCompatActivity {
 
         firebaseFunctions = new FirebaseFunctions(this);
 
+        coins.setText(prefs.getInt("coins", 0) + " Remaining coins");
+
+        firebaseFunctions.databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+                User value = dataSnapshot.child(Objects.requireNonNull(firebaseFunctions.mAuth.getCurrentUser()).getUid()).getValue(User.class);
+                assert value != null;
+                prefs.setString("uid", value.getId());
+                prefs.setInt("coins", value.getCoins());
+                prefs.setBoolean("subscribe", value.isSubscribed());
+
+                coins.setText(prefs.getInt("coins", 0) + " Remaining coins");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Failed to read value
+            }
+        });
+
         if (prefs.getPremium() == 1) {
             txt_subscribed.setText(prefs.getString("subType", "You have a subscription"));
         } else {
@@ -91,8 +117,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             fb_onOff.setText("OFF");
         }
-
-        coins.setText(prefs.getInt("coins", 0) + " Remaining coins");
 
         //Opening activities.
         btn_subscribe.setOnClickListener(view -> {
@@ -154,8 +178,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
-
     void initRemoteConfig() {
 
         FirebaseRemoteConfig mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
@@ -179,12 +201,6 @@ public class MainActivity extends AppCompatActivity {
                     progress_circular.setVisibility(View.GONE);
                     btn_buy_source_code.setVisibility(View.VISIBLE);
                 });
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        firebaseFunctions.readUserData();
     }
 
     private void initViews() {

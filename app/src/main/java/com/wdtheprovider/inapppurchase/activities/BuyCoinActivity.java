@@ -90,7 +90,7 @@ public class BuyCoinActivity extends AppCompatActivity implements RecycleViewInt
                 //setText to the UI
                 txt_coins.setText(prefs.getInt("coins", 0) + " Coin(s)");
 
-                firebaseFunctions.updateCoins(this, prefs.getString("uid", ""), prefs.getInt("coins", 0));
+                firebaseFunctions.updateCoins(prefs.getString("uid", ""), prefs.getInt("coins", 0));
             } else {
                 showSnackBar(btn_use_coins, "Ran out of coins, please recharge.");
             }
@@ -230,7 +230,7 @@ public class BuyCoinActivity extends AppCompatActivity implements RecycleViewInt
                 //Update UI
                 txt_coins.setText(prefs.getInt("coins", 0) + " Coin(s)");
 
-                firebaseFunctions.updateCoins(this, prefs.getString("uid", ""), finalCoins);
+                firebaseFunctions.updateCoins(prefs.getString("uid", ""), finalCoins);
 
                 reloadScreen();
             }

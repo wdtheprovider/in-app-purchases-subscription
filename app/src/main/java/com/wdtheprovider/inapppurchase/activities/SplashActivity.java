@@ -88,11 +88,17 @@ public class SplashActivity extends AppCompatActivity {
                                         prefs.setString("purchasedToken", list.get(0).getPurchaseToken());
                                         prefs.setString("purchasedProductId", list.get(0).getProducts().get(0));
                                         prefs.setPremium(1); // set 1 to activate premium feature
+
+                                        firebaseFunctions.updateSubscribed(prefs.getString("uid",""),true );
+
                                     } else {
                                         prefs.setString("subType", "No Subscription");
                                         prefs.setString("purchasedToken", "");
                                         prefs.setString("purchasedToken", "");
                                         prefs.setPremium(0); // set 0 to de-activate premium feature
+
+                                        firebaseFunctions.updateSubscribed(prefs.getString("uid",""),false );
+
                                     }
                                 }
                             });
