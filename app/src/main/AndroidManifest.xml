@@ -15,6 +15,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Sharcourse">
         <activity
+            android:name=".activities.CoinsTransactionActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.AuthActivity"
             android:exported="false" />
         <activity

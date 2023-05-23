@@ -93,7 +93,7 @@ public class AuthActivity extends AppCompatActivity {
                             FirebaseUser loggedUser = firebaseFunctions.mAuth.getCurrentUser();
                             assert loggedUser != null;
                             Toast.makeText(this, "Sign in successfully...", Toast.LENGTH_SHORT).show();
-                            firebaseFunctions.databaseReference.addValueEventListener(new ValueEventListener() {
+                            firebaseFunctions.usersReference.addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                     // This method is called once with the initial value and again
@@ -136,7 +136,7 @@ public class AuthActivity extends AppCompatActivity {
                             //Adding record to realtime database
                             // Users
                             //   uid: bjhgjhkhj
-                            firebaseFunctions.databaseReference.child(user.getUid()).setValue(userToAdd).addOnCompleteListener(task1 -> {
+                            firebaseFunctions.usersReference.child(user.getUid()).setValue(userToAdd).addOnCompleteListener(task1 -> {
                                 if (task1.isSuccessful()) {
                                     prefs.setString("uid", user.getUid());
                                     prefs.setInt("coins", 15);

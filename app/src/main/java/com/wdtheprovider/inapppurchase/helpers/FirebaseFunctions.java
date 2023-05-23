@@ -1,22 +1,16 @@
 package com.wdtheprovider.inapppurchase.helpers;
 
 import android.content.Context;
+import android.util.Log;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
+import com.android.billingclient.api.Purchase;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.wdtheprovider.inapppurchase.models.User;
-import com.wdtheprovider.inapppurchase.utilies.Prefs;
+import com.wdtheprovider.inapppurchase.models.ConsumableTransaction;
 
+import java.text.SimpleDateFormat;
 import java.util.Objects;
 
 /**
@@ -26,21 +20,26 @@ import java.util.Objects;
 
 public class FirebaseFunctions {
 
-    FirebaseDatabase firebaseDatabase;
-    public final DatabaseReference databaseReference;
+    public FirebaseDatabase firebaseDatabase;
+    public final DatabaseReference usersReference;
+
+    public final DatabaseReference transactionReference;
     public final String rootPath = "Users";
+
+    public final String transactionPath = "Transactions";
     public final FirebaseAuth mAuth;
     Context _context;
 
     public FirebaseFunctions(Context context) {
         _context = context;
         firebaseDatabase = FirebaseDatabase.getInstance();
-        databaseReference = firebaseDatabase.getReference(rootPath);
+        usersReference = firebaseDatabase.getReference(rootPath);
+        transactionReference = firebaseDatabase.getReference(transactionPath);
         mAuth = FirebaseAuth.getInstance();
     }
 
     public void updateCoins(String uid, int coins) {
-        databaseReference.child(uid).child("coins").setValue(coins).addOnCompleteListener(task -> {
+        usersReference.child(uid).child("coins").setValue(coins).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 Toast.makeText(_context, "Coins updated", Toast.LENGTH_SHORT).show();
             } else {
@@ -50,7 +49,7 @@ public class FirebaseFunctions {
     }
 
     public void updateSubscribed(String uid, boolean isSubscribed) {
-        databaseReference.child(uid).child("subscribed").setValue(isSubscribed).addOnCompleteListener(task -> {
+        usersReference.child(uid).child("subscribed").setValue(isSubscribed).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 Toast.makeText(_context, "Subscribed updated", Toast.LENGTH_SHORT).show();
             } else {
@@ -59,7 +58,39 @@ public class FirebaseFunctions {
         });
     }
 
+    public void saveTransaction(Purchase purchase, String uid, int reward) {
+        String orderNumber = purchase.getOrderId();
+        String productId = purchase.getProducts().get(0);
+        String purchaseToken = purchase.getPurchaseToken();
+        String orderDate = new SimpleDateFormat("dd:MM:yyyy").format(new java.util.Date());
+        String item = purchase.getProducts().get(0);
+        int qty = purchase.getQuantity();
+        String time = new SimpleDateFormat("HH:mm").format(new java.util.Date());
+        double price = 5.99;
+
+        ConsumableTransaction transactionToAdd = new ConsumableTransaction();
+
+        transactionToAdd.setItem(item);
+        transactionToAdd.setUid(uid);
+        transactionToAdd.setProductId(productId);
+        transactionToAdd.setOrderDate(orderDate);
+        transactionToAdd.setOrderNumber(orderNumber);
+        transactionToAdd.setPurchasedTime(time);
+        transactionToAdd.setPrice(price);
+        transactionToAdd.setQty(qty);
+        transactionToAdd.setReward(reward);
+        transactionToAdd.setPurchaseToken(purchaseToken);
+
+        transactionReference.push().setValue(transactionToAdd).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Log.d("DebugTrans", "Record added");
+            } else {
+                Log.d("DebugTrans", "something went wrong " + Objects.requireNonNull(task.getException()).getMessage());
+            }
+        });
+    }
+
     public void logOut() {
-      mAuth.signOut();
+        mAuth.signOut();
     }
 }

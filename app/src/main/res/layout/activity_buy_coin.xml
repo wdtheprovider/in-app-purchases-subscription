@@ -115,6 +115,16 @@
                     android:text="Use Coin" />
 
             </LinearLayout>
+
+            <Button
+                android:id="@+id/btn_transaction"
+                android:layout_margin="10dp"
+                android:layout_width="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="Transaction History" />
+
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>

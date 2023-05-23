@@ -3,7 +3,6 @@ package com.wdtheprovider.inapppurchase.activities;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
-import android.media.FaceDetector;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,16 +23,12 @@ import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
-import com.microsoft.appcenter.AppCenter;
-import com.microsoft.appcenter.analytics.Analytics;
-import com.microsoft.appcenter.crashes.Crashes;
 import com.onesignal.OneSignal;
 import com.wdtheprovider.inapppurchase.R;
 import com.wdtheprovider.inapppurchase.helpers.FirebaseFunctions;
@@ -80,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
 
         coins.setText(prefs.getInt("coins", 0) + " Remaining coins");
 
-        firebaseFunctions.databaseReference.addValueEventListener(new ValueEventListener() {
+        firebaseFunctions.usersReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 // This method is called once with the initial value and again
@@ -266,7 +261,7 @@ public class MainActivity extends AppCompatActivity {
                         user.delete().addOnCompleteListener(task -> {
                             Log.d("deteleAccout", "deleting " + task.isSuccessful());
                             if (task.isSuccessful()) {
-                                firebaseFunctions.databaseReference.child(user.getUid()).removeValue().addOnCompleteListener(task1 -> {
+                                firebaseFunctions.usersReference.child(user.getUid()).removeValue().addOnCompleteListener(task1 -> {
                                     if (task1.isSuccessful()) {
                                         Toast.makeText(this, "Account deleted successfully", Toast.LENGTH_SHORT).show();
                                         startActivity(new Intent(this, AuthActivity.class));

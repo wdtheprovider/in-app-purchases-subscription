@@ -30,7 +30,7 @@ import com.android.billingclient.api.QueryPurchasesParams;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableList;
 import com.wdtheprovider.inapppurchase.adapters.SubscriptionAdapter;
 import com.wdtheprovider.inapppurchase.helpers.FirebaseFunctions;
 import com.wdtheprovider.inapppurchase.interfaces.RecycleViewInterface;
@@ -162,7 +162,7 @@ public class SubscriptionActivity extends AppCompatActivity implements RecycleVi
                 (billingResult, prodDetailsList) -> {
                     if (prodDetailsList.size() > 0) { // checking if there's a product returned then set the product(s)
                         // on the recycle viewer
-                        saveOfferToken(prodDetailsList);
+                        //saveOfferToken(prodDetailsList);
                         // Process the result
                         productDetailsList.clear();
                         handler.postDelayed(() -> {
@@ -238,12 +238,8 @@ public class SubscriptionActivity extends AppCompatActivity implements RecycleVi
                 String productId = purchases.getProducts().get(0); /// this one gets the product Id
                 String purchaseToken = purchases.getPurchaseToken(); /// this one gets the purchase token
 
-                Log.d("Test12345verifySubPurchase", purchases.toString());
-                Log.d("Test12345verifySubPurchase", "Purchase token " + purchaseToken);
-                Log.d("Test12345verifySubPurchase", "Product Id " + productId);
-
                 //Save these values for upgrade purposes
-                prefs.setString("purchasedToken", purchases.getPurchaseToken());
+                prefs.setString("purchasedToken", purchaseToken);
                 prefs.setString("purchasedProductId", productId);
 
                 handler.postDelayed(this::reloadScreen, 2000);
@@ -283,6 +279,8 @@ public class SubscriptionActivity extends AppCompatActivity implements RecycleVi
                                         prefs.setString("purchasedToken", "");
                                         showSnackBar(btn_restore_fab, "Oops, No purchase found.");
                                         prefs.setPremium(0); // set 0 to de-activate premium feature
+
+                                        prefs.setBoolean("notCheck",false);
                                     }
                                 }
                             });
@@ -292,35 +290,33 @@ public class SubscriptionActivity extends AppCompatActivity implements RecycleVi
     }
 
     void upgradeOrDowngrade(String dynamicProductId) {
+        for (ProductDetails productDetails: productDetailsList){
 
-        Log.d("TestUpgrade", "The product list Size " + productDetailsList.size());
-        Log.d("TestUpgrade", "The product list Details " + productDetailsList.toString());
+            //test_sub_monthly1
+            if(productDetails.getProductId().equals(dynamicProductId)){
 
-        for (ProductDetails newProdDetails : productDetailsList) {
-
-            if (newProdDetails.getProductId().equals(dynamicProductId)) {
-
-                assert newProdDetails
+                assert productDetails
                         .getSubscriptionOfferDetails() != null;
 
-                String offerToken = newProdDetails.getSubscriptionOfferDetails().get(0).getOfferToken();
+                String offerToken = productDetails
+                        .getSubscriptionOfferDetails().get(0)
+                        .getOfferToken();
 
                 BillingFlowParams billingFlowParams = BillingFlowParams.newBuilder()
                         .setProductDetailsParamsList(
                                 ImmutableList.of(
                                         BillingFlowParams.ProductDetailsParams.newBuilder()
-                                                .setProductDetails(newProdDetails)
+                                                .setProductDetails(productDetails)
                                                 .setOfferToken(offerToken)
                                                 .build()))
                         .setSubscriptionUpdateParams(
                                 BillingFlowParams.SubscriptionUpdateParams.newBuilder()
-                                        .setOldPurchaseToken(prefs.getString("purchasedToken", ""))
-                                        .setReplaceProrationMode(BillingFlowParams.ProrationMode.IMMEDIATE_AND_CHARGE_FULL_PRICE)
+                                        .setOldSkuPurchaseToken(prefs.getString("purchasedToken", ""))
+                                        .setReplaceSkusProrationMode(BillingFlowParams.ProrationMode.IMMEDIATE_AND_CHARGE_FULL_PRICE)
                                         .build())
                         .build();
 
-                //Opening the Billing flow
-                billingClient.launchBillingFlow(activity, billingFlowParams);
+                 billingClient.launchBillingFlow(activity, billingFlowParams);
             }
         }
     }
@@ -330,7 +326,6 @@ public class SubscriptionActivity extends AppCompatActivity implements RecycleVi
 
         final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
         bottomSheetDialog.setContentView(R.layout.bottom_sheet);
-
 
         LinearLayout mangeSub = bottomSheetDialog.findViewById(R.id.manageLayout);
         LinearLayout dismiss = bottomSheetDialog.findViewById(R.id.dismissLinearLayout);

@@ -32,6 +32,7 @@ import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.collec
 import com.wdtheprovider.inapppurchase.adapters.BuyCoinsAdapter;
 import com.wdtheprovider.inapppurchase.helpers.FirebaseFunctions;
 import com.wdtheprovider.inapppurchase.interfaces.RecycleViewInterface;
+import com.wdtheprovider.inapppurchase.models.ConsumableTransaction;
 import com.wdtheprovider.inapppurchase.utilies.Prefs;
 import com.wdtheprovider.inapppurchase.R;
 
@@ -41,7 +42,7 @@ import java.util.List;
 public class BuyCoinActivity extends AppCompatActivity implements RecycleViewInterface {
 
     BillingClient billingClient;
-    Button btn_use_coins;
+    Button btn_use_coins, btn_transaction;
     RecyclerView recyclerView;
     TextView txt_coins;
     List<ProductDetails> productDetailsList;
@@ -94,6 +95,10 @@ public class BuyCoinActivity extends AppCompatActivity implements RecycleViewInt
             } else {
                 showSnackBar(btn_use_coins, "Ran out of coins, please recharge.");
             }
+        });
+
+        btn_transaction.setOnClickListener(v -> {
+            startActivity(new Intent(this, CoinsTransactionActivity.class));
         });
     }
 
@@ -195,6 +200,7 @@ public class BuyCoinActivity extends AppCompatActivity implements RecycleViewInt
         recyclerView = findViewById(R.id.recyclerview);
         txt_coins = findViewById(R.id.txt_coins);
         loadProducts = findViewById(R.id.loadProducts);
+        btn_transaction = findViewById(R.id.btn_transaction);
 
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -215,10 +221,13 @@ public class BuyCoinActivity extends AppCompatActivity implements RecycleViewInt
 
     @SuppressLint("SetTextI18n")
     void giveUserCoins(Purchase purchase) {
+
+        int boughtCoins = 0;
+
         for (int i = 0; i < productIds.size(); i++) {
             if (purchase.getProducts().get(0).equals(productIds.get(i))) {
                 //set coins
-                int boughtCoins = coins.get(i) * purchase.getQuantity();
+                boughtCoins = coins.get(i) * purchase.getQuantity();
                 int myCoins = prefs.getInt("coins", 0);
                 int finalCoins = myCoins + boughtCoins;
 
@@ -234,6 +243,10 @@ public class BuyCoinActivity extends AppCompatActivity implements RecycleViewInt
 
                 reloadScreen();
             }
+        }
+
+        if (purchase != null) {
+            firebaseFunctions.saveTransaction(purchase, prefs.getString("uid", ""), boughtCoins);
         }
     }
 

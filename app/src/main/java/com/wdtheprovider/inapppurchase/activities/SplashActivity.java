@@ -26,6 +26,8 @@ import com.wdtheprovider.inapppurchase.helpers.FirebaseFunctions;
 import com.wdtheprovider.inapppurchase.models.User;
 import com.wdtheprovider.inapppurchase.utilies.Prefs;
 
+import java.text.SimpleDateFormat;
+
 @SuppressLint("CustomSplashScreen")
 public class SplashActivity extends AppCompatActivity {
 
@@ -89,7 +91,7 @@ public class SplashActivity extends AppCompatActivity {
                                         prefs.setString("purchasedProductId", list.get(0).getProducts().get(0));
                                         prefs.setPremium(1); // set 1 to activate premium feature
 
-                                        firebaseFunctions.updateSubscribed(prefs.getString("uid",""),true );
+                                        firebase(true);
 
                                     } else {
                                         prefs.setString("subType", "No Subscription");
@@ -97,13 +99,26 @@ public class SplashActivity extends AppCompatActivity {
                                         prefs.setString("purchasedToken", "");
                                         prefs.setPremium(0); // set 0 to de-activate premium feature
 
-                                        firebaseFunctions.updateSubscribed(prefs.getString("uid",""),false );
-
+                                        firebase(false);
                                     }
                                 }
                             });
                 }
             }
         });
+    }
+
+    void firebase(boolean is){
+        if (prefs.getInt("checkedCount", 0) > 2 && prefs.getBoolean("checked", false)) {
+            prefs.setInt("checkedCount", 0);
+            firebaseFunctions.updateSubscribed(prefs.getString("uid", ""), is);
+        } else {
+            int temp = prefs.getInt("checkedCount", 0);
+            prefs.setInt("checkedCount", temp + 1);
+
+            if(prefs.getInt("checkedCount", 0)>8){
+                prefs.setBoolean("checked",true);
+            }
+        }
     }
 }
