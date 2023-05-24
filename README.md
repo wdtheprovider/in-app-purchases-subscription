@@ -7,6 +7,7 @@ In this repository i'm going to show you how to integrate In-App Purchases of Go
 
 Demo <br>
 Demo available on Play Store : https://play.google.com/store/apps/details?id=com.wdtheprovider.inapppurchase
+<span> <img src="https://github.com/wdtheprovider/in-app-purchases-subscription/blob/master/app/src/main/res/drawable/demo.png" width="600" height="550">
 <br>
 
 <span> <img src="https://github.com/wdtheprovider/in-app-purchases-subscription/blob/master/app/src/main/res/drawable/screen3.png" width="270" height="550">
