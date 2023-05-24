@@ -1,5 +1,7 @@
 package com.wdtheprovider.inapppurchase.activities;
 
+import static com.wdtheprovider.inapppurchase.utilies.StoreEngine.saveProductPrice;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
@@ -32,7 +34,6 @@ import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.collec
 import com.wdtheprovider.inapppurchase.adapters.BuyCoinsAdapter;
 import com.wdtheprovider.inapppurchase.helpers.FirebaseFunctions;
 import com.wdtheprovider.inapppurchase.interfaces.RecycleViewInterface;
-import com.wdtheprovider.inapppurchase.models.ConsumableTransaction;
 import com.wdtheprovider.inapppurchase.utilies.Prefs;
 import com.wdtheprovider.inapppurchase.R;
 
@@ -54,7 +55,6 @@ public class BuyCoinActivity extends AppCompatActivity implements RecycleViewInt
     BuyCoinsAdapter adapter;
     ArrayList<Integer> coins;
     ArrayList<String> productIds;
-
     FirebaseFunctions firebaseFunctions;
 
     @SuppressLint("SetTextI18n")
@@ -90,7 +90,6 @@ public class BuyCoinActivity extends AppCompatActivity implements RecycleViewInt
                 prefs.setInt("coins", prefs.getInt("coins", 0) - 1);
                 //setText to the UI
                 txt_coins.setText(prefs.getInt("coins", 0) + " Coin(s)");
-
                 firebaseFunctions.updateCoins(prefs.getString("uid", ""), prefs.getInt("coins", 0));
             } else {
                 showSnackBar(btn_use_coins, "Ran out of coins, please recharge.");
@@ -151,6 +150,7 @@ public class BuyCoinActivity extends AppCompatActivity implements RecycleViewInt
             handler.postDelayed(() -> {
                 loadProducts.setVisibility(View.INVISIBLE); //
                 productDetailsList.addAll(list);
+                saveProductPrice(list, prefs);
                 adapter = new BuyCoinsAdapter(getApplicationContext(), productDetailsList, BuyCoinActivity.this);
                 recyclerView.setHasFixedSize(true);
                 recyclerView.setLayoutManager(new LinearLayoutManager(BuyCoinActivity.this, LinearLayoutManager.VERTICAL, false));
