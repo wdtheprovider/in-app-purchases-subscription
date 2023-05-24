@@ -9,6 +9,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.wdtheprovider.inapppurchase.models.ConsumableTransaction;
+import com.wdtheprovider.inapppurchase.utilies.Prefs;
 
 import java.text.SimpleDateFormat;
 import java.util.Objects;
@@ -19,19 +20,18 @@ import java.util.Objects;
  **/
 
 public class FirebaseFunctions {
-
     public FirebaseDatabase firebaseDatabase;
     public final DatabaseReference usersReference;
-
     public final DatabaseReference transactionReference;
     public final String rootPath = "Users";
-
     public final String transactionPath = "Transactions";
     public final FirebaseAuth mAuth;
     Context _context;
+    Prefs prefs;
 
     public FirebaseFunctions(Context context) {
         _context = context;
+        prefs = new Prefs(context);
         firebaseDatabase = FirebaseDatabase.getInstance();
         usersReference = firebaseDatabase.getReference(rootPath);
         transactionReference = firebaseDatabase.getReference(transactionPath);
@@ -63,10 +63,10 @@ public class FirebaseFunctions {
         String productId = purchase.getProducts().get(0);
         String purchaseToken = purchase.getPurchaseToken();
         String orderDate = new SimpleDateFormat("dd:MM:yyyy").format(new java.util.Date());
-        String item = purchase.getProducts().get(0);
+        String item = prefs.getString(purchase.getProducts().get(0)+"_item","");
         int qty = purchase.getQuantity();
         String time = new SimpleDateFormat("HH:mm").format(new java.util.Date());
-        double price = 5.99;
+        double price = Double.parseDouble(prefs.getString(purchase.getProducts().get(0)+"_price",""));
 
         ConsumableTransaction transactionToAdd = new ConsumableTransaction();
 
