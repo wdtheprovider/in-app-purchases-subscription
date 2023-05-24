@@ -9,10 +9,10 @@ Demo <br>
 Demo available on Play Store : https://play.google.com/store/apps/details?id=com.wdtheprovider.inapppurchase
 <br>
 
-<span> <img src="https://github.com/wdtheprovider/in-app-purchases-subscription/blob/master/app/src/main/res/drawable/screen 3.png" width="270" height="550">
- <span> <img src="https://github.com/wdtheprovider/in-app-purchases-subscription/blob/master/app/src/main/res/drawable/screen 1.png" width="270" height="550">
+<span> <img src="https://github.com/wdtheprovider/in-app-purchases-subscription/blob/master/app/src/main/res/drawable/screen3.png" width="270" height="550">
+ <span> <img src="https://github.com/wdtheprovider/in-app-purchases-subscription/blob/master/app/src/main/res/drawable/screen1.png" width="270" height="550">
 <span> <img src="https://github.com/wdtheprovider/in-app-purchases-subscription/blob/master/app/src/main/res/drawable/p2.jpg" width="270" height="550">
-<span> <img src="https://github.com/wdtheprovider/in-app-purchases-subscription/blob/master/app/src/main/res/drawable/screen 2.png" width="270" height="550">
+<span> <img src="https://github.com/wdtheprovider/in-app-purchases-subscription/blob/master/app/src/main/res/drawable/screen2.png" width="270" height="550">
 <span> <img src="https://github.com/wdtheprovider/in-app-purchases-subscription/blob/master/app/src/main/res/drawable/p4.jpg" width="270" height="550">
 <span> <img src="https://github.com/wdtheprovider/in-app-purchases-subscription/blob/master/app/src/main/res/drawable/p5.jpg" width="270" height="550">
 <span> <img src="https://github.com/wdtheprovider/in-app-purchases-subscription/blob/master/app/src/main/res/drawable/p6.jpg" width="270" height="550">
