@@ -59,7 +59,7 @@ void restorePurchase(){}
 
 dependencies {
 
-    def billing_version = "5.0.0"
+    def billing_version = "6.0.0"
     implementation "com.android.billingclient:billing:$billing_version"
     implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
     implementation 'com.google.guava:guava:24.1-jre'
