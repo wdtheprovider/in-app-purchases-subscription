@@ -31,13 +31,9 @@ public class CoinsTransactionActivity extends AppCompatActivity implements Recyc
 
     TextView txt_total, txt_total_amount, txt_total_transactions;
     RecyclerView rv_transaction_recyclerview;
-
     List<ConsumableTransaction> transactions = new ArrayList<>();
-
     CoinsTransactionAdapter adapter;
-
     FirebaseFunctions firebaseFunctions;
-
     Prefs prefs;
 
     @Override
