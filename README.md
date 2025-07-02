@@ -2,12 +2,11 @@
 
 Consumable Item In-App Purchases: https://github.com/wdtheprovider/in-app-purchase
 
-In this repository i'm going to show you how to integrate In-App Purchases of Google Play Billing version 6+ in 7 steps. I follow the officailly google 
- docs, i'm not using any third-party library
+In this repository, I'm going to show you how to integrate In-App Purchases of Google Play Billing version 8.0.0+ in 7 steps. I follow the official Google 
+ docs, I'm not using any third-party library
 
 Demo <br>
-Demo available on Play Store : https://play.google.com/store/apps/details?id=com.wdtheprovider.inapppurchase
-<span> <img src="https://github.com/wdtheprovider/in-app-purchases-subscription/blob/master/app/src/main/res/drawable/demo.png" width="1180" height="550">
+Demo available on Play Store: https://play.google.com/store/apps/details?id=com.wdtheprovider.inapppurchase
 <br>
 
 <span> <img src="https://github.com/wdtheprovider/in-app-purchases-subscription/blob/master/app/src/main/res/drawable/screen3.png" width="270" height="550">
@@ -30,7 +29,7 @@ Demo available on Play Store : https://play.google.com/store/apps/details?id=com
 
 Pre-requisite
 - Google Play Console Account
-- Published App on Play Store
+- Published App on the Play Store
 - Tester Device with GMS
 
 YouTube Video: Part-1 | Intro Demo: https://youtu.be/nQrsVB7quKw <br>
@@ -38,17 +37,17 @@ YouTube Video: Part-1 | Intro Demo: https://youtu.be/nQrsVB7quKw <br>
 <br>YouTube Video: Part-3 | Integrating The Methods to purchase the products: Uploading soon <br>
 
 ```
-Configure Your Testing device by adding the gmail account to internal testing testers 
+Configure Your Testing device by adding the Gmail account to internal testing testers 
 and License testing (Watch the YouTube video for clarity: https://youtu.be/j6wWVMj-fi8 )
 
 
-Setup the in-app purchase subscription product in Google Play Console account
-i have already created mine which are 
+Set up the in-app purchase subscription product in the Google Play Console account
+I have already created mine, which are 
 Product ID: sub_premium
 
 ```
 
-The following methods (These are the methods you need for the IAP System to work, you can copy and paste)
+The following methods (These are the methods you need for the IAP System to work; you can copy and paste)
 
 ```java
 void establishConnection(){}
@@ -92,17 +91,20 @@ dependencies {
 ```
 
 ```xml
-//And Open Manifest File and add this permission
+//And Open the Manifest File and add this permission
 <uses-permission android:name="com.android.vending.BILLING" />
+
+// Possible Error:  java.lang.IllegalArgumentException: Pending purchases for one-time products must be supported.
+// You need to add .enableOneTimeProducts() method after PendingPurchasesParams.newBuilder()
 
 ```
 ### Step 2: Initialize a BillingClient with PurchasesUpdatedListener<br>
 
 ```java
-  //Initialize a BillingClient with PurchasesUpdatedListener onCreate method
+  //Initialize a BillingClient with PurchasesUpdatedListener in the onCreate method
 
     billingClient = BillingClient.newBuilder(this)
-                .enablePendingPurchases()
+                 .enablePendingPurchases(PendingPurchasesParams.newBuilder().enableOneTimeProducts().build())
                 .setListener(
                         new PurchasesUpdatedListener() {
                             @Override
@@ -116,7 +118,7 @@ dependencies {
                         }
                 ).build();
 
-        //start the connection after initializing the billing client
+        //Start the connection after initializing the billing client
         establishConnection();
                 
 ```
@@ -188,7 +190,7 @@ dependencies {
 
                             loadProducts.setVisibility(View.INVISIBLE);
 
-                            productDetailsList.addAll(prodDetailsList);
+                            productDetailsList.addAll(prodDetailsList.getProductDetailsList());
                             Log.d(TAG,productDetailsList.size()+" number of products");
 
                             adapter = new ProductDetailsAdapter(getApplicationContext(), productDetailsList, Subscriptions.this);
@@ -284,7 +286,7 @@ dependencies {
 ```java
 void checkSubscription(){
 
-        billingClient = BillingClient.newBuilder(this).enablePendingPurchases().setListener((billingResult, list) -> {}).build();
+        billingClient = BillingClient.newBuilder(this).enablePendingPurchases(PendingPurchasesParams.newBuilder().enableOneTimeProducts().build()).setListener((billingResult, list) -> {}).build();
         final BillingClient finalBillingClient = billingClient;
         billingClient.startConnection(new BillingClientStateListener() {
             @Override
