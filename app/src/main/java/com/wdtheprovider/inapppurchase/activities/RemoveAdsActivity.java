@@ -21,6 +21,7 @@ import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingClientStateListener;
 import com.android.billingclient.api.BillingFlowParams;
 import com.android.billingclient.api.BillingResult;
+import com.android.billingclient.api.PendingPurchasesParams;
 import com.android.billingclient.api.ProductDetails;
 import com.android.billingclient.api.Purchase;
 import com.android.billingclient.api.QueryProductDetailsParams;
@@ -66,7 +67,7 @@ public class RemoveAdsActivity extends AppCompatActivity implements RecycleViewI
 
         //Initialize a BillingClient with PurchasesUpdatedListener onCreate method
         billingClient = BillingClient.newBuilder(this)
-                .enablePendingPurchases()
+                .enablePendingPurchases(PendingPurchasesParams.newBuilder().enableOneTimeProducts().build())
                 .setListener(
                         (billingResult, list) -> {
                             if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK && list != null) {
@@ -147,7 +148,7 @@ public class RemoveAdsActivity extends AppCompatActivity implements RecycleViewI
                     productDetailsList.clear();
                     handler.postDelayed(() -> {
                         loadProducts.setVisibility(View.INVISIBLE);
-                        productDetailsList.addAll(prodDetailsList);
+                        productDetailsList.addAll(prodDetailsList.getProductDetailsList());
                         adapter = new RemoveAdsAdapter(getApplicationContext(), productDetailsList, RemoveAdsActivity.this);
                         recyclerView.setHasFixedSize(true);
                         recyclerView.setLayoutManager(new LinearLayoutManager(RemoveAdsActivity.this, LinearLayoutManager.VERTICAL, false));
@@ -216,7 +217,7 @@ public class RemoveAdsActivity extends AppCompatActivity implements RecycleViewI
     }
 
     void restorePurchases() {
-        billingClient = BillingClient.newBuilder(this).enablePendingPurchases().setListener((billingResult, list) -> {
+        billingClient = BillingClient.newBuilder(this).enablePendingPurchases(PendingPurchasesParams.newBuilder().enableOneTimeProducts().build()).setListener((billingResult, list) -> {
         }).build();
         final BillingClient finalBillingClient = billingClient;
         billingClient.startConnection(new BillingClientStateListener() {
@@ -259,8 +260,8 @@ public class RemoveAdsActivity extends AppCompatActivity implements RecycleViewI
 
     }
 
-    @Override
-    public void onBackPressed() {
+
+    public void OnBackPressedDispatcher() {
         super.onBackPressed();
         startActivity(new Intent(activity, MainActivity.class));
         finish();

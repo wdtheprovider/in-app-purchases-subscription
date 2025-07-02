@@ -4,16 +4,20 @@ plugins {
 }
 
 android {
-    compileSdk 33
+    compileSdk 36
+
+    namespace('com.wdtheprovider.inapppurchase')
 
     defaultConfig {
         applicationId "com.wdtheprovider.inapppurchase"
         minSdk 23
-        targetSdk 33
-        versionCode 15
-        versionName "1.5"
+        targetSdk 36
+        versionCode 21
+        versionName "7.0.8"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        multiDexEnabled true
     }
 
     buildTypes {
@@ -40,19 +44,14 @@ dependencies {
     implementation 'androidx.navigation:navigation-fragment:2.5.3'
     implementation 'androidx.navigation:navigation-ui:2.5.3'
 
-    def billing_version = "6.0.1"
+    def billing_version = "8.0.0"
     implementation "com.android.billingclient:billing:$billing_version"
     implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
     implementation 'com.google.guava:guava:24.1-jre'
 
-    def appCenterSdkVersion = '4.4.5'
-    implementation "com.microsoft.appcenter:appcenter-analytics:${appCenterSdkVersion}"
-    implementation "com.microsoft.appcenter:appcenter-crashes:${appCenterSdkVersion}"
-
-    implementation 'com.google.android.gms:play-services-ads:21.5.0'
+    implementation 'com.google.android.gms:play-services-ads:23.3.0'
     implementation platform('com.google.firebase:firebase-bom:31.0.1')
     implementation 'com.google.firebase:firebase-analytics'
-    implementation 'com.onesignal:OneSignal:[4.0.0, 4.99.99]'
 
     implementation platform('com.google.firebase:firebase-bom:31.0.1')
     implementation 'com.google.firebase:firebase-config'
@@ -61,9 +60,10 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth'
     implementation 'com.google.firebase:firebase-database'
     // Also add the dependency for the Google Play services library and specify its version
-    implementation 'com.google.android.gms:play-services-auth:20.5.0'
+    implementation 'com.google.android.gms:play-services-auth:21.0.0'
 
     implementation 'com.facebook.android:audience-network-sdk:6.12.0'
+    implementation 'androidx.multidex:multidex:2.0.1'
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

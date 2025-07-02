@@ -16,6 +16,7 @@ import android.widget.ProgressBar;
 import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingClientStateListener;
 import com.android.billingclient.api.BillingResult;
+import com.android.billingclient.api.PendingPurchasesParams;
 import com.android.billingclient.api.ProductDetails;
 import com.android.billingclient.api.Purchase;
 import com.android.billingclient.api.QueryProductDetailsParams;
@@ -50,7 +51,7 @@ public class InAppPurchaseActivity extends AppCompatActivity implements RecycleV
         initViews();
 
         billingClient = BillingClient.newBuilder(this)
-                .enablePendingPurchases()
+                .enablePendingPurchases(PendingPurchasesParams.newBuilder().enableOneTimeProducts().build())
                 .setListener(
                         (billingResult, list) -> {
                             if(billingResult.getResponseCode()==BillingClient.BillingResponseCode.OK && list !=null) {
@@ -130,7 +131,7 @@ public class InAppPurchaseActivity extends AppCompatActivity implements RecycleV
                     productDetailsList.clear();
                     handler.postDelayed(() -> {
                         loadProducts.setVisibility(View.INVISIBLE);
-                        productDetailsList.addAll(prodDetailsList);
+                        productDetailsList.addAll(prodDetailsList.getProductDetailsList());
                         adapter = new InAppPurchaseAdapter(getApplicationContext(), productDetailsList, InAppPurchaseActivity.this);
                         recyclerView.setHasFixedSize(true);
                         recyclerView.setLayoutManager(new LinearLayoutManager(InAppPurchaseActivity.this, LinearLayoutManager.VERTICAL, false));
@@ -182,7 +183,7 @@ public class InAppPurchaseActivity extends AppCompatActivity implements RecycleV
                     productInAppDetailsList.clear();
                     handler.postDelayed(() -> {
                         loadProducts.setVisibility(View.INVISIBLE);
-                        productInAppDetailsList.addAll(prodInAppDetailsList);
+                        productInAppDetailsList.addAll(prodInAppDetailsList.getProductDetailsList());
                         InAppAdapter = new InAppProductAdapter(getApplicationContext(), productInAppDetailsList, InAppPurchaseActivity.this);
                         inAppRecyclerview.setHasFixedSize(true);
                         inAppRecyclerview.setLayoutManager(new LinearLayoutManager(InAppPurchaseActivity.this, LinearLayoutManager.VERTICAL, false));
@@ -202,8 +203,7 @@ public class InAppPurchaseActivity extends AppCompatActivity implements RecycleV
 
     }
 
-    @Override
-    public void onBackPressed() {
+     public void OnBackPressedDispatcher() {
         super.onBackPressed();
         startActivity(new Intent(this,MainActivity.class));
         finish();

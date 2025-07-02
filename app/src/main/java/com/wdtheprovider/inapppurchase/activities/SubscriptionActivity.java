@@ -23,6 +23,7 @@ import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingClientStateListener;
 import com.android.billingclient.api.BillingFlowParams;
 import com.android.billingclient.api.BillingResult;
+import com.android.billingclient.api.PendingPurchasesParams;
 import com.android.billingclient.api.ProductDetails;
 import com.android.billingclient.api.Purchase;
 import com.android.billingclient.api.QueryProductDetailsParams;
@@ -85,7 +86,7 @@ public class SubscriptionActivity extends AppCompatActivity implements RecycleVi
         firebaseFunctions = new FirebaseFunctions(this);
 
         billingClient = BillingClient.newBuilder(this)
-                .enablePendingPurchases()
+                .enablePendingPurchases(PendingPurchasesParams.newBuilder().enableOneTimeProducts().build())
                 .setListener(
                         (billingResult, list) -> {
                             if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK && list != null) {
@@ -160,7 +161,7 @@ public class SubscriptionActivity extends AppCompatActivity implements RecycleVi
         billingClient.queryProductDetailsAsync(
                 params,
                 (billingResult, prodDetailsList) -> {
-                    if (prodDetailsList.size() > 0) { // checking if there's a product returned then set the product(s)
+                    if (prodDetailsList.getProductDetailsList().size() > 0) { // checking if there's a product returned then set the product(s)
                         // on the recycle viewer
                         //saveOfferToken(prodDetailsList);
                         // Process the result
@@ -168,7 +169,7 @@ public class SubscriptionActivity extends AppCompatActivity implements RecycleVi
                         handler.postDelayed(() -> {
                             loadProducts.setVisibility(View.INVISIBLE);
                             recyclerView.setVisibility(View.VISIBLE);
-                            productDetailsList.addAll(prodDetailsList);
+                            productDetailsList.addAll(prodDetailsList.getProductDetailsList());
                             adapter = new SubscriptionAdapter(getApplicationContext(), productDetailsList, SubscriptionActivity.this);
                             recyclerView.setHasFixedSize(true);
                             recyclerView.setLayoutManager(new LinearLayoutManager(SubscriptionActivity.this, LinearLayoutManager.VERTICAL, false));
@@ -250,7 +251,7 @@ public class SubscriptionActivity extends AppCompatActivity implements RecycleVi
     void restorePurchases() {
 
         billingClient = BillingClient.newBuilder(this)
-                .enablePendingPurchases()
+                .enablePendingPurchases(PendingPurchasesParams.newBuilder().enableOneTimeProducts().build())
                 .setListener((billingResult, list) -> {
                 }).build();
 
@@ -381,8 +382,7 @@ public class SubscriptionActivity extends AppCompatActivity implements RecycleVi
         bottomSheetDialog.show();
     }
 
-    @Override
-    public void onBackPressed() {
+     public void OnBackPressedDispatcher() {
         super.onBackPressed();
         startActivity(new Intent(activity, MainActivity.class));
         finish();

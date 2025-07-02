@@ -26,6 +26,7 @@ import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingClientStateListener;
 import com.android.billingclient.api.BillingFlowParams;
 import com.android.billingclient.api.BillingResult;
+import com.android.billingclient.api.PendingPurchasesParams;
 import com.android.billingclient.api.ProductDetails;
 import com.android.billingclient.api.Purchase;
 import com.android.billingclient.api.QueryProductDetailsParams;
@@ -82,7 +83,7 @@ public class BuyCodeActivity extends AppCompatActivity implements RecycleViewInt
         }
         //Initialize a BillingClient with PurchasesUpdatedListener onCreate method
         billingClient = BillingClient.newBuilder(this)
-                .enablePendingPurchases()
+                .enablePendingPurchases(PendingPurchasesParams.newBuilder().enableOneTimeProducts().build())
                 .setListener(
                         (billingResult, list) -> {
                             if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK && list != null) {
@@ -152,7 +153,7 @@ public class BuyCodeActivity extends AppCompatActivity implements RecycleViewInt
                     productDetailsList.clear();
                     handler.postDelayed(() -> {
                         loadProducts.setVisibility(View.INVISIBLE);
-                        productDetailsList.addAll(prodDetailsList);
+                        productDetailsList.addAll(prodDetailsList.getProductDetailsList());
                         adapter = new BuyCodeAdapter(getApplicationContext(), productDetailsList, BuyCodeActivity.this);
                         recyclerView.setHasFixedSize(true);
                         recyclerView.setLayoutManager(new LinearLayoutManager(BuyCodeActivity.this, LinearLayoutManager.VERTICAL, false));
@@ -210,7 +211,7 @@ public class BuyCodeActivity extends AppCompatActivity implements RecycleViewInt
     }
 
     void restorePurchases() {
-        billingClient = BillingClient.newBuilder(this).enablePendingPurchases().setListener((billingResult, list) -> {
+        billingClient = BillingClient.newBuilder(this).enablePendingPurchases(PendingPurchasesParams.newBuilder().enableOneTimeProducts().build()).setListener((billingResult, list) -> {
         }).build();
         final BillingClient finalBillingClient = billingClient;
         billingClient.startConnection(new BillingClientStateListener() {
@@ -256,8 +257,7 @@ public class BuyCodeActivity extends AppCompatActivity implements RecycleViewInt
         btn_dwn_source_code = findViewById(R.id.btn_dwn_source_code);
     }
 
-    @Override
-    public void onBackPressed() {
+     public void OnBackPressedDispatcher() {
         super.onBackPressed();
         startActivity(new Intent(activity,MainActivity.class));
         finish();

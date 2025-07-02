@@ -25,6 +25,7 @@ import com.android.billingclient.api.BillingFlowParams;
 import com.android.billingclient.api.BillingResult;
 import com.android.billingclient.api.ConsumeParams;
 import com.android.billingclient.api.ConsumeResponseListener;
+import com.android.billingclient.api.PendingPurchasesParams;
 import com.android.billingclient.api.ProductDetails;
 import com.android.billingclient.api.Purchase;
 import com.android.billingclient.api.QueryProductDetailsParams;
@@ -69,7 +70,7 @@ public class BuyCoinActivity extends AppCompatActivity implements RecycleViewInt
 
 
         billingClient = BillingClient.newBuilder(this)
-                .enablePendingPurchases()
+                .enablePendingPurchases(PendingPurchasesParams.newBuilder().enableOneTimeProducts().build())
                 .setListener(
                         (billingResult, list) -> {
                             if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK && list != null) {
@@ -149,8 +150,8 @@ public class BuyCoinActivity extends AppCompatActivity implements RecycleViewInt
             productDetailsList.clear();
             handler.postDelayed(() -> {
                 loadProducts.setVisibility(View.INVISIBLE); //
-                productDetailsList.addAll(list);
-                saveProductPrice(list, prefs);
+                productDetailsList.addAll(list.getProductDetailsList());
+                saveProductPrice(list.getProductDetailsList(), prefs);
                 adapter = new BuyCoinsAdapter(getApplicationContext(), productDetailsList, BuyCoinActivity.this);
                 recyclerView.setHasFixedSize(true);
                 recyclerView.setLayoutManager(new LinearLayoutManager(BuyCoinActivity.this, LinearLayoutManager.VERTICAL, false));
@@ -274,8 +275,7 @@ public class BuyCoinActivity extends AppCompatActivity implements RecycleViewInt
         overridePendingTransition(0, 0);
     }
 
-    @Override
-    public void onBackPressed() {
+     public void OnBackPressedDispatcher() {
         super.onBackPressed();
         startActivity(new Intent(activity, MainActivity.class));
         finish();

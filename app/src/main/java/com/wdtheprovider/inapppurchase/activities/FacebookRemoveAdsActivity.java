@@ -23,6 +23,7 @@ import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingClientStateListener;
 import com.android.billingclient.api.BillingFlowParams;
 import com.android.billingclient.api.BillingResult;
+import com.android.billingclient.api.PendingPurchasesParams;
 import com.android.billingclient.api.ProductDetails;
 import com.android.billingclient.api.Purchase;
 import com.android.billingclient.api.QueryProductDetailsParams;
@@ -82,7 +83,7 @@ public class FacebookRemoveAdsActivity extends AppCompatActivity {
 
         //Initialize a BillingClient with PurchasesUpdatedListener onCreate method
         billingClient = BillingClient.newBuilder(this)
-                .enablePendingPurchases()
+                .enablePendingPurchases(PendingPurchasesParams.newBuilder().enableOneTimeProducts().build())
                 .setListener(
                         (billingResult, list) -> {
                             if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK && list != null) {
@@ -142,7 +143,7 @@ public class FacebookRemoveAdsActivity extends AppCompatActivity {
                     // Process the result
                     productDetailsList.clear();
                     handler.postDelayed(() -> {
-                        productDetailsList.addAll(prodDetailsList);
+                        productDetailsList.addAll(prodDetailsList.getProductDetailsList());
                         if (!productDetailsList.isEmpty()) {
                             loadingProducts.setVisibility(View.INVISIBLE);
                             mainCard.setVisibility(View.VISIBLE);
@@ -247,8 +248,7 @@ public class FacebookRemoveAdsActivity extends AppCompatActivity {
         adView.loadAd();
     }
 
-    @Override
-    public void onBackPressed() {
+     public void OnBackPressedDispatcher() {
         super.onBackPressed();
         startActivity(new Intent(activity, MainActivity.class));
         finish();
@@ -266,7 +266,7 @@ public class FacebookRemoveAdsActivity extends AppCompatActivity {
     void restorePurchases() {
 
         billingClient = BillingClient.newBuilder(this)
-                .enablePendingPurchases()
+                .enablePendingPurchases(PendingPurchasesParams.newBuilder().enableOneTimeProducts().build())
                 .setListener((billingResult, list) -> {
                 }).build();
 
